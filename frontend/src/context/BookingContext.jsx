@@ -109,13 +109,16 @@ export const BookingProvider = ({ children }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(roomData)
       });
-      if (!res.ok) throw new Error('Failed to create room');
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to create room');
+      }
       await fetchRooms();
-      return true;
+      return { success: true };
     } catch (err) {
       console.error(err);
       setErrorMsg(err.message);
-      return false;
+      return { success: false, error: err.message };
     } finally {
       setIsLoading(false);
     }
@@ -130,13 +133,16 @@ export const BookingProvider = ({ children }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(roomData)
       });
-      if (!res.ok) throw new Error('Failed to update room');
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to update room');
+      }
       await fetchRooms();
-      return true;
+      return { success: true };
     } catch (err) {
       console.error(err);
       setErrorMsg(err.message);
-      return false;
+      return { success: false, error: err.message };
     } finally {
       setIsLoading(false);
     }

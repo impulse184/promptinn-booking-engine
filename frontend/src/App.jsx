@@ -506,12 +506,8 @@ export default function App() {
 
       {/* Booking Input Dialog Overlay */}
       {bookingRoom && (
-        <div className="modal-overlay" onClick={(e) => {
-          if (e.target.className === 'modal-overlay') {
-            handleCloseBookingModal();
-          }
-        }}>
-          <div className="modal-content glass-panel modal-content-large" style={{ position: 'relative' }}>
+        <div className="modal-overlay" onClick={handleCloseBookingModal}>
+          <div className="modal-content glass-panel modal-content-large" onClick={(e) => e.stopPropagation()} style={{ position: 'relative' }}>
             
             {/* Close Button */}
             <button

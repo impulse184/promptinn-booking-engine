@@ -163,13 +163,35 @@ export default function AdminDashboard() {
       mapQuery: roomFormData.mapQuery || ''
     };
 
+    // Client-side validations
+    if (!payload.title.trim() || !payload.description.trim() || !payload.location.trim()) {
+      alert('Please fill out all required fields (Title, Description, and Location).');
+      return;
+    }
+    if (isNaN(payload.price) || payload.price <= 0) {
+      alert('Please enter a valid nightly rate (greater than 0).');
+      return;
+    }
+    if (isNaN(payload.totalRooms) || payload.totalRooms <= 0) {
+      alert('Please enter a valid total inventory count (greater than 0).');
+      return;
+    }
+
     if (editingRoom) {
       payload.availableRooms = Number(roomFormData.availableRooms) || Number(roomFormData.totalRooms);
-      const success = await updateRoom(editingRoom._id, payload);
-      if (success) setEditingRoom(null);
+      const res = await updateRoom(editingRoom._id, payload);
+      if (res.success) {
+        setEditingRoom(null);
+      } else {
+        alert(res.error || 'Failed to update listing.');
+      }
     } else {
-      const success = await createRoom(payload);
-      if (success) setShowAddRoomModal(false);
+      const res = await createRoom(payload);
+      if (res.success) {
+        setShowAddRoomModal(false);
+      } else {
+        alert(res.error || 'Failed to create listing.');
+      }
     }
   };
 
