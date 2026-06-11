@@ -1147,3 +1147,82 @@ h1, h2, h3, h4, h5, h6 {
   color: hsl(var(--text-muted));
   margin-top: auto;
 }
+
+/* Large Two-Pane Details Modal */
+.modal-content-large {
+  max-width: 1200px !important;
+  width: 95% !important;
+  height: 90vh !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  overflow: hidden !important;
+  border-radius: 16px !important;
+  position: relative;
+}
+
+.details-left-pane {
+  flex: 7;
+  padding: 2rem;
+  overflow-y: auto;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.details-right-pane {
+  flex: 5;
+  padding: 2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: rgba(15, 23, 42, 0.25);
+  backdrop-filter: blur(10px);
+}
+
+.details-left-pane::-webkit-scrollbar,
+.details-right-pane::-webkit-scrollbar {
+  width: 6px;
+}
+
+.details-left-pane::-webkit-scrollbar-thumb,
+.details-right-pane::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.details-left-pane::-webkit-scrollbar-thumb:hover,
+.details-right-pane::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.map-embed-wrapper iframe {
+  filter: invert(90%) hue-rotate(180deg); /* Sleek dark-themed map overlay style */
+  opacity: 0.85;
+}
+
+.payment-card-icon {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .modal-content-large {
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    height: 95vh !important;
+  }
+  .details-left-pane {
+    flex: none;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    overflow-y: visible;
+  }
+  .details-right-pane {
+    flex: none;
+    overflow-y: visible;
+  }
+}

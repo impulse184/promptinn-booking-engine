@@ -10,6 +10,7 @@ export const BookingProvider = ({ children }) => {
   const [rooms, setRooms] = useState([]); // Matches search
   const [allRooms, setAllRooms] = useState([]); // Admin list / all rooms
   const [bookings, setBookings] = useState([]);
+  const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(() => {
     const stored = sessionStorage.getItem('promptinn_user');
@@ -175,16 +176,121 @@ export const BookingProvider = ({ children }) => {
         throw new Error(errData.error || 'Booking failed');
       }
       
+      const data = await res.json();
       await fetchRooms();
       await fetchBookings(currentUser?.role === 'admin' ? null : currentUser?._id);
-      setBookingRoom(null);
-      return true;
+      return data;
     } catch (err) {
       console.error(err);
       alert(err.message);
-      return false;
+      return null;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Fetch all users (Admin only)
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/users`);
+      if (!res.ok) throw new Error('Failed to fetch users');
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Create user (Admin)
+  const createUser = async (userData) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Failed to create user');
+      }
+      await fetchUsers();
+      return { success: true };
+    } catch (err) {
+      console.error(err);
+      return { success: false, error: err.message };
+    }
+  };
+
+  // Update user (Admin)
+  const updateUser = async (id, userData) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Failed to update user');
+      }
+      await fetchUsers();
+      return { success: true };
+    } catch (err) {
+      console.error(err);
+      return { success: false, error: err.message };
+    }
+  };
+
+  // Delete user (Admin)
+  const deleteUser = async (id) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/users/${id}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error('Failed to delete user');
+      await fetchUsers();
+      await fetchBookings(currentUser?.role === 'admin' ? null : currentUser?._id);
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  };
+
+  // Update booking (Admin/User)
+  const updateBooking = async (id, bookingData) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/bookings/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingData)
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Failed to update booking');
+      }
+      await fetchRooms();
+      await fetchBookings(currentUser?.role === 'admin' ? null : currentUser?._id);
+      return { success: true };
+    } catch (err) {
+      console.error(err);
+      return { success: false, error: err.message };
+    }
+  };
+
+  // Delete booking (Admin/User)
+  const deleteBooking = async (id) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/bookings/${id}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error('Failed to delete booking');
+      await fetchRooms();
+      await fetchBookings(currentUser?.role === 'admin' ? null : currentUser?._id);
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
     }
   };
 
@@ -252,6 +358,9 @@ export const BookingProvider = ({ children }) => {
   useEffect(() => {
     fetchRooms();
     fetchBookings(currentUser?.role === 'admin' ? null : currentUser?._id);
+    if (currentUser?.role === 'admin') {
+      fetchUsers();
+    }
   }, [currentUser]);
 
   return (
@@ -278,6 +387,13 @@ export const BookingProvider = ({ children }) => {
       updateRoom,
       deleteRoom,
       placeBooking,
+      users,
+      fetchUsers,
+      createUser,
+      updateUser,
+      deleteUser,
+      updateBooking,
+      deleteBooking,
       refreshData: fetchRooms
     }}>
       {children}

@@ -3,7 +3,21 @@ import { useBooking } from './context/BookingContext';
 import SearchConsole from './components/SearchConsole';
 import RoomCard from './components/RoomCard';
 import AdminDashboard from './components/AdminDashboard';
-import { BedDouble, Shield, User, X, Check, Loader2, Lock, AlertCircle } from 'lucide-react';
+import { 
+  BedDouble, 
+  Shield, 
+  User, 
+  X, 
+  Check, 
+  Loader2, 
+  Lock, 
+  AlertCircle,
+  Star,
+  MapPin,
+  CreditCard,
+  Calendar,
+  CheckCircle
+} from 'lucide-react';
 
 export default function App() {
   const { 
@@ -22,8 +36,15 @@ export default function App() {
     logoutUser 
   } = useBooking();
 
-  // Booking Form State
+  // Booking & Payment States
   const [customerName, setCustomerName] = useState('');
+  const [bookingStep, setBookingStep] = useState('details'); // 'details' | 'payment' | 'success'
+  const [confirmedBooking, setConfirmedBooking] = useState(null);
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
+  const [cardName, setCardName] = useState('');
+  const [isPaying, setIsPaying] = useState(false);
   
   // Auth Page State
   const [isRegistering, setIsRegistering] = useState(false);
@@ -88,12 +109,25 @@ export default function App() {
     }
   }, [checkIn, checkOut, bookingRoom]);
 
-  const handleBookingSubmit = async (e) => {
+  const handleProceedToPayment = (e) => {
     e.preventDefault();
     if (!customerName.trim()) {
       alert('Please enter your name.');
       return;
     }
+    setBookingStep('payment');
+  };
+
+  const handleBookingSubmit = async (e) => {
+    e.preventDefault();
+    if (!cardNumber || !cardExpiry || !cardCvv || !cardName) {
+      alert('Please enter complete mock card details.');
+      return;
+    }
+
+    setIsPaying(true);
+    // Simulate a brief mock payment gateway delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     const payload = {
       roomId: bookingRoom._id,
@@ -102,11 +136,25 @@ export default function App() {
       checkOut
     };
 
-    const success = await placeBooking(payload);
-    if (success) {
-      setCustomerName('');
-      alert('🎉 Booking confirmed successfully! Enjoy your stay.');
+    const bookingResult = await placeBooking(payload);
+    setIsPaying(false);
+    if (bookingResult) {
+      setConfirmedBooking(bookingResult);
+      setBookingStep('success');
+    } else {
+      alert('Reservation failed. Please check room availability.');
     }
+  };
+
+  const handleCloseBookingModal = () => {
+    setBookingRoom(null);
+    setBookingStep('details');
+    setConfirmedBooking(null);
+    setCustomerName('');
+    setCardNumber('');
+    setCardExpiry('');
+    setCardCvv('');
+    setCardName('');
   };
 
   return (
@@ -450,98 +498,366 @@ export default function App() {
       {/* Booking Input Dialog Overlay */}
       {bookingRoom && (
         <div className="modal-overlay">
-          <div className="modal-content glass-panel">
-            <div className="modal-header">
-              <div className="modal-header-text">
-                <span className="badge badge-accent" style={{ marginBottom: '6px', width: 'fit-content' }}>Confirm Booking</span>
-                <h3 className="text-gradient-neon" style={{ fontSize: '1.25rem' }}>{bookingRoom.title}</h3>
-                <p style={{ color: 'hsl(var(--text-muted))', fontSize: '0.75rem', marginTop: '2px' }}>{bookingRoom.location}</p>
+          <div className="modal-content glass-panel modal-content-large" style={{ position: 'relative' }}>
+            
+            {/* Close Button */}
+            <button
+              onClick={handleCloseBookingModal}
+              className="modal-close-btn"
+              style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 10, background: 'rgba(15,23,42,0.3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* LEFT PANE: Details & Location Map */}
+            <div className="details-left-pane">
+              {/* Hotel Image Banner */}
+              <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', height: '320px', width: '100%', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <img
+                  src={bookingRoom.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80"}
+                  alt={bookingRoom.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(15,23,42,0.65)', backdropFilter: 'blur(8px)', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '6px', color: 'white', fontSize: '0.85rem', fontWeight: '600' }}>
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <span>{bookingRoom.rating.toFixed(1)} / 5.0</span>
+                </div>
               </div>
-              <button
-                onClick={() => setBookingRoom(null)}
-                className="modal-close-btn"
-              >
-                <X className="w-5 h-5" />
-              </button>
+
+              {/* Title & Metadata */}
+              <div>
+                <h2 className="text-gradient-neon" style={{ fontSize: '1.8rem', fontWeight: '800', marginBottom: '8px' }}>
+                  {bookingRoom.title}
+                </h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'hsl(var(--text-secondary))', fontSize: '0.9rem' }}>
+                  <MapPin className="w-4 h-4" />
+                  <span>{bookingRoom.location}</span>
+                </div>
+              </div>
+
+              {/* Room Description */}
+              <div>
+                <h4 style={{ color: 'white', fontWeight: '700', fontSize: '1rem', marginBottom: '8px' }}>About this listing</h4>
+                <p style={{ color: 'hsl(var(--text-secondary))', fontSize: '0.9rem', lineHeight: '1.6' }}>
+                  {bookingRoom.description}
+                </p>
+              </div>
+
+              {/* Amenities List */}
+              <div>
+                <h4 style={{ color: 'white', fontWeight: '700', fontSize: '1rem', marginBottom: '10px' }}>Features & Amenities</h4>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {bookingRoom.amenities.map((amenity) => {
+                    const maps = {
+                      wifi: { label: 'Free Wi-Fi', class: 'badge-accent' },
+                      pool: { label: 'Swimming Pool', class: 'badge-cyan' },
+                      gym: { label: 'Fitness Center', class: 'badge-outline' },
+                      spa: { label: 'Spa & Wellness', class: 'badge-accent' },
+                      parking: { label: 'Valet Parking', class: 'badge-outline' },
+                      ac: { label: 'Air Conditioning', class: 'badge-cyan' },
+                      kitchen: { label: 'Fully Equipped Kitchen', class: 'badge-outline' },
+                      breakfast: { label: 'Breakfast Included', class: 'badge-accent' },
+                      pets: { label: 'Pet Friendly', class: 'badge-outline' }
+                    };
+                    const item = maps[amenity.toLowerCase()] || { label: amenity, class: 'badge-outline' };
+                    return (
+                      <span key={amenity} className={`badge ${item.class}`} style={{ fontSize: '0.75rem', padding: '6px 12px', borderRadius: '6px' }}>
+                        {item.label}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Interactive Location Map */}
+              <div>
+                <h4 style={{ color: 'white', fontWeight: '700', fontSize: '1rem', marginBottom: '4px' }}>Location Map</h4>
+                <p style={{ color: 'hsl(var(--text-muted))', fontSize: '0.75rem', marginBottom: '12px' }}>Explore the neighborhood and transport links below.</p>
+                
+                <div className="map-embed-wrapper" style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', height: '260px' }}>
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    frameBorder="0"
+                    style={{ border: 0 }}
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(bookingRoom.location)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                    allowFullScreen
+                    title="Hotel Location Map"
+                  ></iframe>
+                </div>
+              </div>
+
             </div>
 
-            <form onSubmit={handleBookingSubmit} className="modal-form">
-              <div className="form-group">
-                <label>Guest Full Name</label>
-                <input
-                  type="text"
-                  required
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="e.g. John Doe"
-                  className="form-input-field"
-                />
-              </div>
+            {/* RIGHT PANE: Booking, Payment, or Success Steps */}
+            <div className="details-right-pane">
+              
+              {/* STEP 1: Details & Setup Dates */}
+              {bookingStep === 'details' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%' }}>
+                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '1rem', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'hsl(var(--text-muted))', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '600' }}>Reservation Setup</span>
+                    <h3 style={{ color: 'white', fontWeight: '800', fontSize: '1.35rem', marginTop: '4px' }}>Book Your Stay</h3>
+                  </div>
 
-              <div className="form-row-grid">
-                <div className="form-group">
-                  <label>Check-in Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={checkIn}
-                    onChange={(e) => setCheckIn(e.target.value)}
-                    className="form-input-field"
-                  />
-                </div>
+                  <form onSubmit={handleProceedToPayment} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
+                    <div className="form-group">
+                      <label>Guest Full Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                        placeholder="e.g. John Doe"
+                        className="form-input-field"
+                      />
+                    </div>
 
-                <div className="form-group">
-                  <label>Check-out Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={checkOut}
-                    onChange={(e) => setCheckOut(e.target.value)}
-                    className="form-input-field"
-                  />
-                </div>
-              </div>
+                    <div className="form-group">
+                      <label>Check-in Date</label>
+                      <input
+                        type="date"
+                        required
+                        value={checkIn}
+                        onChange={(e) => setCheckIn(e.target.value)}
+                        className="form-input-field"
+                      />
+                    </div>
 
-              {/* Pricing breakdown */}
-              <div className="price-breakdown-box">
-                <div className="price-breakdown-row">
-                  <span>Price per night:</span>
-                  <span>${bookingRoom.price}</span>
-                </div>
-                <div className="price-breakdown-row">
-                  <span>Duration:</span>
-                  <span>{nights} {nights === 1 ? 'night' : 'nights'}</span>
-                </div>
-                <div className="price-breakdown-total">
-                  <span>Total Price:</span>
-                  <span>${totalPrice}</span>
-                </div>
-              </div>
+                    <div className="form-group">
+                      <label>Check-out Date</label>
+                      <input
+                        type="date"
+                        required
+                        value={checkOut}
+                        onChange={(e) => setCheckOut(e.target.value)}
+                        className="form-input-field"
+                      />
+                    </div>
 
-              <div className="modal-action-row">
-                <button
-                  type="button"
-                  onClick={() => setBookingRoom(null)}
-                  className="btn btn-secondary text-xs"
-                  style={{ padding: '8px 16px' }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="btn btn-primary text-xs"
-                  style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px' }}
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <Check className="w-3.5 h-3.5" />
-                  )}
-                  Confirm Reservation
-                </button>
-              </div>
-            </form>
+                    {/* Pricing breakdown box */}
+                    <div className="price-breakdown-box" style={{ marginTop: 'auto', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <div className="price-breakdown-row">
+                        <span>Rate:</span>
+                        <span style={{ color: 'white', fontWeight: '600' }}>${bookingRoom.price} / night</span>
+                      </div>
+                      <div className="price-breakdown-row">
+                        <span>Duration:</span>
+                        <span style={{ color: 'white', fontWeight: '600' }}>{nights} {nights === 1 ? 'night' : 'nights'}</span>
+                      </div>
+                      <div className="price-breakdown-total" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '10px', marginTop: '10px' }}>
+                        <span>Total Estimate:</span>
+                        <span style={{ fontSize: '1.3rem', fontWeight: '800' }}>${totalPrice}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ padding: '12px', fontSize: '0.9rem', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                    >
+                      <CreditCard className="w-4 h-4" />
+                      Proceed to Checkout
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {/* STEP 2: Secure Mock Checkout */}
+              {bookingStep === 'payment' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%' }}>
+                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '1rem', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Lock className="w-3 h-3" /> Secure Mock Payment
+                    </span>
+                    <h3 style={{ color: 'white', fontWeight: '800', fontSize: '1.35rem', marginTop: '4px' }}>Complete Checkout</h3>
+                  </div>
+
+                  <form onSubmit={handleBookingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem', flex: 1 }}>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', padding: '12px', backgroundColor: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.15)', borderRadius: '8px', fontSize: '0.75rem', color: '#34d399', lineHeight: '1.4' }}>
+                      <strong>⚠️ Simulation Gateway:</strong>
+                      This is a secure mock sandbox. You can enter any mock card details to proceed. No real charges will be made.
+                    </div>
+
+                    <div className="form-group">
+                      <label>Name on Card</label>
+                      <input
+                        type="text"
+                        required
+                        value={cardName}
+                        onChange={(e) => setCardName(e.target.value)}
+                        placeholder="e.g. JOHN DOE"
+                        className="form-input-field"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Card Number</label>
+                      <input
+                        type="text"
+                        required
+                        maxLength="19"
+                        value={cardNumber}
+                        onChange={(e) => {
+                          const v = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                          const matches = v.match(/\d{4,16}/g);
+                          const match = (matches && matches[0]) || '';
+                          const parts = [];
+                          for (let i=0, len=match.length; i<len; i+=4) {
+                            parts.push(match.substring(i, i+4));
+                          }
+                          if (parts.length > 0) {
+                            setCardNumber(parts.join(' '));
+                          } else {
+                            setCardNumber(v);
+                          }
+                        }}
+                        placeholder="4111 2222 3333 4444"
+                        className="form-input-field"
+                      />
+                    </div>
+
+                    <div className="form-row-grid">
+                      <div className="form-group">
+                        <label>Expiry Date</label>
+                        <input
+                          type="text"
+                          required
+                          maxLength="5"
+                          value={cardExpiry}
+                          onChange={(e) => {
+                            const v = e.target.value.replace(/\//g, '').replace(/[^0-9]/gi, '');
+                            if (v.length >= 2) {
+                              setCardExpiry(v.substring(0,2) + '/' + v.substring(2,4));
+                            } else {
+                              setCardExpiry(v);
+                            }
+                          }}
+                          placeholder="MM/YY"
+                          className="form-input-field"
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label>CVC / CVV</label>
+                        <input
+                          type="password"
+                          required
+                          maxLength="3"
+                          value={cardCvv}
+                          onChange={(e) => setCardCvv(e.target.value.replace(/[^0-9]/gi, ''))}
+                          placeholder="123"
+                          className="form-input-field"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Cost Summary */}
+                    <div style={{ backgroundColor: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)', marginTop: 'auto' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'hsl(var(--text-secondary))' }}>
+                        <span>Booking Charge:</span>
+                        <span>{nights} night(s) Stay</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: '700', color: 'white', marginTop: '6px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '6px' }}>
+                        <span>Total Price (USD):</span>
+                        <span style={{ color: 'hsl(var(--accent-secondary))' }}>${totalPrice}</span>
+                      </div>
+                    </div>
+
+                    <div className="modal-action-row" style={{ border: 'none', padding: 0 }}>
+                      <button
+                        type="button"
+                        onClick={() => setBookingStep('details')}
+                        className="btn btn-secondary"
+                        style={{ flex: 1, padding: '10px' }}
+                      >
+                        Back
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isPaying}
+                        className="btn btn-primary"
+                        style={{ flex: 2, padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                      >
+                        {isPaying ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" /> Authorization...
+                          </>
+                        ) : (
+                          <>
+                            <Check className="w-4 h-4" /> Pay & Confirm
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {/* STEP 3: Booking Success! */}
+              {bookingStep === 'success' && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', textAlign: 'center', gap: '1.5rem', padding: '1rem' }}>
+                  
+                  {/* Glowing success badge */}
+                  <div style={{ width: '70px', height: '70px', borderRadius: '50%', backgroundColor: 'rgba(16,185,129,0.1)', border: '2px solid #10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10b981', boxShadow: '0 0 20px rgba(16,185,129,0.2)' }}>
+                    <CheckCircle className="w-10 h-10" />
+                  </div>
+
+                  <div>
+                    <h3 style={{ color: 'white', fontWeight: '800', fontSize: '1.5rem', marginBottom: '6px' }}>Booking Confirmed!</h3>
+                    <p style={{ color: '#34d399', fontSize: '0.85rem', fontWeight: '500' }}>Your mock payment was completed successfully.</p>
+                  </div>
+
+                  {/* Booking Receipt Summary Card */}
+                  <div style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem', textAlign: 'left' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '8px', marginBottom: '4px' }}>
+                      <span style={{ color: 'hsl(var(--text-muted))' }}>Reference ID:</span>
+                      <strong style={{ fontFamily: 'monospace', color: 'white' }}>{confirmedBooking?._id?.substring(0, 8).toUpperCase() || 'PINN-CONF'}</strong>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'hsl(var(--text-secondary))' }}>Guest Name:</span>
+                      <span style={{ color: 'white', fontWeight: '600' }}>{confirmedBooking?.customerName}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'hsl(var(--text-secondary))' }}>Room Title:</span>
+                      <span style={{ color: 'white', fontWeight: '600', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{bookingRoom.title}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'hsl(var(--text-secondary))' }}>Check-in:</span>
+                      <span style={{ color: 'white', fontWeight: '600' }}>{new Date(checkIn).toLocaleDateString()}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'hsl(var(--text-secondary))' }}>Check-out:</span>
+                      <span style={{ color: 'white', fontWeight: '600' }}>{new Date(checkOut).toLocaleDateString()}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '8px', marginTop: '4px' }}>
+                      <span style={{ color: 'white', fontWeight: '700' }}>Total Paid:</span>
+                      <strong style={{ color: '#10b981', fontSize: '1.1rem', fontWeight: '800' }}>${totalPrice}</strong>
+                    </div>
+                  </div>
+
+                  <p style={{ color: 'hsl(var(--text-secondary))', fontSize: '0.75rem', lineHeight: '1.4' }}>
+                    A notification has been sent. You can review and manage this reservation anytime in your <strong>"My Reservations"</strong> tab.
+                  </p>
+
+                  <button
+                    onClick={handleCloseBookingModal}
+                    className="btn btn-primary"
+                    style={{ width: '100%', padding: '12px', fontSize: '0.85rem', fontWeight: '600' }}
+                  >
+                    Close & Explore More
+                  </button>
+                </div>
+              )}
+
+            </div>
+
           </div>
         </div>
       )}

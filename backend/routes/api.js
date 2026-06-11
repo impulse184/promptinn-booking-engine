@@ -310,6 +310,160 @@ router.get('/bookings', async (req, res) => {
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ error: error.message });
+// Bookings: Update booking (Admin/User)
+router.put('/bookings/:id', async (req, res) => {
+  try {
+    const { customerName, checkIn, checkOut, roomId } = req.body;
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found." });
+    }
+    
+    // If room is changing, update availability
+    if (roomId && roomId !== booking.room.toString()) {
+      // Revert old room
+      const oldRoom = await Room.findById(booking.room);
+      if (oldRoom) {
+        oldRoom.availableRooms += 1;
+        await oldRoom.save();
+      }
+      
+      // Deduct from new room
+      const newRoom = await Room.findById(roomId);
+      if (!newRoom) {
+        return res.status(404).json({ error: "New room not found." });
+      }
+      if (newRoom.availableRooms <= 0) {
+        return res.status(400).json({ error: "No inventory available in new room." });
+      }
+      newRoom.availableRooms -= 1;
+      await newRoom.save();
+      booking.room = roomId;
+    }
+
+    if (customerName) booking.customerName = customerName;
+    if (checkIn) booking.checkIn = new Date(checkIn);
+    if (checkOut) booking.checkOut = new Date(checkOut);
+    
+    // Recalculate price if dates or room changed
+    if (checkIn || checkOut || (roomId && roomId !== booking.room.toString())) {
+      const room = await Room.findById(booking.room);
+      if (room) {
+        const start = new Date(booking.checkIn);
+        const end = new Date(booking.checkOut);
+        const nights = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+        booking.totalPrice = room.price * nights;
+      }
+    }
+
+    const saved = await booking.save();
+    const populated = await Booking.findById(saved._id).populate('room');
+    res.json(populated);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Bookings: Delete/Cancel booking (Admin/User)
+router.delete('/bookings/:id', async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found." });
+    }
+    
+    // Increment room availability back
+    const room = await Room.findById(booking.room);
+    if (room) {
+      room.availableRooms = Math.min(room.totalRooms, room.availableRooms + 1);
+      await room.save();
+    }
+
+    await Booking.findByIdAndDelete(req.params.id);
+    res.json({ message: "Booking deleted/cancelled successfully." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Users: Get all users (Admin only)
+router.get('/users', async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Users: Create new user (Admin)
+router.post('/users', async (req, res) => {
+  try {
+    const { username, password, role } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required." });
+    }
+    const normalizedUsername = username.trim().toLowerCase();
+    const existing = await User.findOne({ username: normalizedUsername });
+    if (existing) {
+      return res.status(400).json({ error: "Username is already taken." });
+    }
+    const newUser = new User({
+      username: normalizedUsername,
+      password: password,
+      role: role || 'user'
+    });
+    await newUser.save();
+    res.status(201).json(newUser);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Users: Update user (Admin)
+router.put('/users/:id', async (req, res) => {
+  try {
+    const { username, password, role } = req.body;
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    if (username) {
+      const normalizedUsername = username.trim().toLowerCase();
+      if (normalizedUsername !== user.username) {
+        const existing = await User.findOne({ username: normalizedUsername });
+        if (existing) {
+          return res.status(400).json({ error: "Username is already taken." });
+        }
+        user.username = normalizedUsername;
+      }
+    }
+    if (password) user.password = password;
+    if (role) user.role = role;
+
+    await user.save();
+    res.json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Users: Delete user (Admin)
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    
+    // Delete all bookings associated with this user
+    await Booking.deleteMany({ user: req.params.id });
+    
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: "User and associated bookings deleted successfully." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
