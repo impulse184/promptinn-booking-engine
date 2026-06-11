@@ -49,6 +49,10 @@ const roomSchema = new mongoose.Schema({
   mapQuery: {
     type: String,
     default: '',
+  },
+  images: {
+    type: [String],
+    default: [],
   }
 }, {
   timestamps: true

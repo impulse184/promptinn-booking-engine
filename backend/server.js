@@ -32,15 +32,24 @@ app.get('/health', (req, res) => {
   res.json({ status: 'healthy', database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' });
 });
 
-// Serve Static Frontend Files (production build)
+// Serve Static Frontend Files (production build) with custom headers to prevent browser caching of index.html
 const distPath = path.join(__dirname, '../frontend/dist');
-app.use(express.static(distPath));
+app.use(express.static(distPath, {
+  setHeaders: (res, filePath) => {
+    if (path.basename(filePath) === 'index.html') {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    }
+  }
+}));
 
 // Fallback all other routes to index.html for Single Page App (SPA) routing
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api')) {
     return next();
   }
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.sendFile(path.join(distPath, 'index.html'));
 });
 

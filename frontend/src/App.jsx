@@ -45,6 +45,7 @@ export default function App() {
   const [cardCvv, setCardCvv] = useState('');
   const [cardName, setCardName] = useState('');
   const [isPaying, setIsPaying] = useState(false);
+  const [activeImage, setActiveImage] = useState('');
   
   // Auth Page State
   const [isRegistering, setIsRegistering] = useState(false);
@@ -79,7 +80,7 @@ export default function App() {
   const [nights, setNights] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  // Initialize dates: Check-in (today), Check-out (tomorrow)
+  // Initialize dates: Check-in (today), Check-out (tomorrow), Active Image Gallery
   useEffect(() => {
     const today = new Date();
     const tomorrow = new Date();
@@ -94,6 +95,12 @@ export default function App() {
 
     setCheckIn(formatDate(today));
     setCheckOut(formatDate(tomorrow));
+
+    if (bookingRoom) {
+      setActiveImage(bookingRoom.image || '');
+    } else {
+      setActiveImage('');
+    }
   }, [bookingRoom]);
 
   // Update dynamic nights and totalPrice when dates or room changes
@@ -512,17 +519,65 @@ export default function App() {
             {/* LEFT PANE: Details & Location Map */}
             <div className="details-left-pane">
               {/* Hotel Image Banner */}
-              <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', height: '320px', width: '100%', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', height: '320px', width: '100%', border: '1px solid rgba(0,0,0,0.08)' }}>
                 <img
-                  src={bookingRoom.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80"}
+                  src={activeImage || bookingRoom.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80"}
                   alt={bookingRoom.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'all 0.3s ease' }}
                 />
                 <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(15,23,42,0.65)', backdropFilter: 'blur(8px)', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '6px', color: 'white', fontSize: '0.85rem', fontWeight: '600' }}>
                   <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                   <span>{bookingRoom.rating.toFixed(1)} / 5.0</span>
                 </div>
               </div>
+
+              {/* Image Gallery Thumbnails */}
+              {bookingRoom.images && bookingRoom.images.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: 'hsl(var(--text-muted))', letterSpacing: '0.05em' }}>
+                    Photo Gallery (Click to preview)
+                  </span>
+                  <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '6px' }}>
+                    {/* Primary Hero image */}
+                    <div 
+                      onClick={() => setActiveImage(bookingRoom.image)}
+                      style={{ 
+                        width: '76px', 
+                        height: '56px', 
+                        borderRadius: '6px', 
+                        overflow: 'hidden', 
+                        cursor: 'pointer', 
+                        border: (activeImage === bookingRoom.image || !activeImage) ? '2px solid hsl(var(--accent-primary))' : '1px solid hsl(var(--border-color))',
+                        opacity: (activeImage === bookingRoom.image || !activeImage) ? 1 : 0.65,
+                        flexShrink: 0,
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <img src={bookingRoom.image} alt="Hero image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    {/* Additional image urls */}
+                    {bookingRoom.images.map((url, idx) => (
+                      <div 
+                        key={url}
+                        onClick={() => setActiveImage(url)}
+                        style={{ 
+                          width: '76px', 
+                          height: '56px', 
+                          borderRadius: '6px', 
+                          overflow: 'hidden', 
+                          cursor: 'pointer', 
+                          border: activeImage === url ? '2px solid hsl(var(--accent-primary))' : '1px solid hsl(var(--border-color))',
+                          opacity: activeImage === url ? 1 : 0.65,
+                          flexShrink: 0,
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        <img src={url} alt={`Gallery image ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Title & Metadata */}
               <div>

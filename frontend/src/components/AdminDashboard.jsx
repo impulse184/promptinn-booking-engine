@@ -44,7 +44,8 @@ export default function AdminDashboard() {
     amenitiesString: '',
     image: '',
     totalRooms: '5',
-    mapQuery: ''
+    mapQuery: '',
+    imagesString: ''
   });
 
   // User Form Modal States
@@ -76,7 +77,8 @@ export default function AdminDashboard() {
       amenitiesString: '',
       image: '',
       totalRooms: '5',
-      mapQuery: ''
+      mapQuery: '',
+      imagesString: ''
     });
   };
 
@@ -97,7 +99,8 @@ export default function AdminDashboard() {
       image: room.image,
       totalRooms: room.totalRooms.toString(),
       availableRooms: room.availableRooms.toString(),
-      mapQuery: room.mapQuery || ''
+      mapQuery: room.mapQuery || '',
+      imagesString: room.images ? room.images.join(', ') : ''
     });
   };
 
@@ -108,6 +111,11 @@ export default function AdminDashboard() {
       .map(item => item.trim().toLowerCase())
       .filter(item => item.length > 0);
 
+    const cleanImages = roomFormData.imagesString
+      .split(',')
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
+
     const payload = {
       title: roomFormData.title,
       description: roomFormData.description,
@@ -116,6 +124,7 @@ export default function AdminDashboard() {
       rating: Number(roomFormData.rating),
       amenities: cleanAmenities,
       image: roomFormData.image,
+      images: cleanImages,
       totalRooms: Number(roomFormData.totalRooms),
       mapQuery: roomFormData.mapQuery || ''
     };
@@ -625,12 +634,23 @@ export default function AdminDashboard() {
               </div>
 
               <div className="form-group">
-                <label>Image URL</label>
+                <label>Image URL (Primary Hero Image)</label>
                 <input
                   type="url"
                   value={roomFormData.image}
                   onChange={(e) => setRoomFormData({ ...roomFormData, image: e.target.value })}
                   placeholder="https://example.com/image.jpg"
+                  className="form-input-field"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Additional Gallery Images (comma-separated URLs)</label>
+                <input
+                  type="text"
+                  value={roomFormData.imagesString}
+                  onChange={(e) => setRoomFormData({ ...roomFormData, imagesString: e.target.value })}
+                  placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg"
                   className="form-input-field"
                 />
               </div>

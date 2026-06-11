@@ -131,7 +131,7 @@ router.get('/rooms', async (req, res) => {
 // CRUD: Create new room (Admin)
 router.post('/rooms', async (req, res) => {
   try {
-    const { title, description, location, price, rating, amenities, image, totalRooms, mapQuery } = req.body;
+    const { title, description, location, price, rating, amenities, image, images, totalRooms, mapQuery } = req.body;
     
     const newRoom = new Room({
       title,
@@ -141,6 +141,7 @@ router.post('/rooms', async (req, res) => {
       rating: Number(rating) || 4.5,
       amenities: Array.isArray(amenities) ? amenities : [],
       image: image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80',
+      images: Array.isArray(images) ? images : [],
       totalRooms: Number(totalRooms) || 5,
       availableRooms: Number(totalRooms) || 5,
       mapQuery: mapQuery || ''
@@ -156,7 +157,7 @@ router.post('/rooms', async (req, res) => {
 // CRUD: Update room (Admin)
 router.put('/rooms/:id', async (req, res) => {
   try {
-    const { title, description, location, price, rating, amenities, image, totalRooms, availableRooms, mapQuery } = req.body;
+    const { title, description, location, price, rating, amenities, image, images, totalRooms, availableRooms, mapQuery } = req.body;
     
     const updatedRoom = await Room.findByIdAndUpdate(
       req.params.id,
@@ -168,6 +169,7 @@ router.put('/rooms/:id', async (req, res) => {
         rating: Number(rating),
         amenities: Array.isArray(amenities) ? amenities : [],
         image,
+        images: Array.isArray(images) ? images : [],
         totalRooms: Number(totalRooms),
         availableRooms: Number(availableRooms),
         mapQuery: mapQuery || ''
