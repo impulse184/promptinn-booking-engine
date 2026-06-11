@@ -451,7 +451,7 @@ export default function App() {
                               {booking.room?.location || 'Unknown Location'}
                             </p>
                             <span className="badge badge-outline" style={{ fontSize: '0.65rem' }}>
-                              {booking.room?.price ? `$${booking.room.price} / night` : 'N/A'}
+                              {booking.room?.price ? `₹${booking.room.price} / night` : 'N/A'}
                             </span>
                           </div>
                         </div>
@@ -471,7 +471,7 @@ export default function App() {
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', minWidth: '120px' }}>
                           <span style={{ fontSize: '0.7rem', color: 'hsl(var(--text-muted))', fontWeight: '600', textTransform: 'uppercase', marginBottom: '2px' }}>Total Paid</span>
                           <span className="text-gradient-neon" style={{ fontSize: '1.4rem', fontWeight: '800' }}>
-                            ${booking.totalPrice}
+                            ₹{booking.totalPrice}
                           </span>
                           <span className="badge badge-accent" style={{ marginTop: '6px', background: 'hsl(var(--accent-success) / 0.15)', color: '#34d399', border: '1px solid hsl(var(--accent-success) / 0.3)' }}>
                             {booking.status || 'Confirmed'}
@@ -639,7 +639,7 @@ export default function App() {
                     <div className="price-breakdown-box" style={{ marginTop: 'auto', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
                       <div className="price-breakdown-row">
                         <span>Rate:</span>
-                        <span style={{ color: 'white', fontWeight: '600' }}>${bookingRoom.price} / night</span>
+                        <span style={{ color: 'white', fontWeight: '600' }}>₹{bookingRoom.price} / night</span>
                       </div>
                       <div className="price-breakdown-row">
                         <span>Duration:</span>
@@ -647,7 +647,7 @@ export default function App() {
                       </div>
                       <div className="price-breakdown-total" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '10px', marginTop: '10px' }}>
                         <span>Total Estimate:</span>
-                        <span style={{ fontSize: '1.3rem', fontWeight: '800' }}>${totalPrice}</span>
+                        <span style={{ fontSize: '1.3rem', fontWeight: '800' }}>₹{totalPrice}</span>
                       </div>
                     </div>
 
@@ -760,8 +760,8 @@ export default function App() {
                         <span>{nights} night(s) Stay</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: '700', color: 'white', marginTop: '6px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '6px' }}>
-                        <span>Total Price (USD):</span>
-                        <span style={{ color: 'hsl(var(--accent-secondary))' }}>${totalPrice}</span>
+                        <span>Total Price (INR):</span>
+                        <span style={{ color: 'hsl(var(--accent-secondary))' }}>₹{totalPrice}</span>
                       </div>
                     </div>
 
@@ -838,7 +838,7 @@ export default function App() {
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '8px', marginTop: '4px' }}>
                       <span style={{ color: 'white', fontWeight: '700' }}>Total Paid:</span>
-                      <strong style={{ color: '#10b981', fontSize: '1.1rem', fontWeight: '800' }}>${totalPrice}</strong>
+                      <strong style={{ color: '#10b981', fontSize: '1.1rem', fontWeight: '800' }}>₹{totalPrice}</strong>
                     </div>
                   </div>
 

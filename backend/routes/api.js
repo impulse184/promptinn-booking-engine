@@ -5,73 +5,19 @@ import User from '../models/User.js';
 import { parsePromptToMongo } from '../services/geminiParser.js';
 
 const router = express.Router();
+import initialRooms from '../config/initialRooms.js';
 
 // Seed data helper
-const initialRooms = [
-  {
-    title: "Tokyo Luxury Spa & Suites",
-    description: "Experience world-class hospitality in the heart of Tokyo. Features a full-service hot spring spa, indoor swimming pool, and stunning skyline views.",
-    location: "Tokyo, Japan",
-    price: 380,
-    rating: 4.8,
-    amenities: ["wifi", "pool", "spa", "ac", "breakfast"],
-    image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80",
-    totalRooms: 5,
-    availableRooms: 5
-  },
-  {
-    title: "London Budget Cozy Inn",
-    description: "Affordable and cozy rooms located steps away from public transport. Includes free English breakfast and high-speed Wi-Fi.",
-    location: "London, UK",
-    price: 85,
-    rating: 4.1,
-    amenities: ["wifi", "breakfast", "parking"],
-    image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
-    totalRooms: 10,
-    availableRooms: 10
-  },
-  {
-    title: "Seattle Urban Gym & Lofts",
-    description: "Sleek, modern apartments in downtown Seattle. Equipped with a complete in-unit kitchen, pet-friendly services, and access to a premium fitness center.",
-    location: "Seattle, USA",
-    price: 210,
-    rating: 4.6,
-    amenities: ["wifi", "gym", "ac", "kitchen", "pets"],
-    image: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=600&q=80",
-    totalRooms: 6,
-    availableRooms: 6
-  },
-  {
-    title: "Paris Garden Boutique Stay",
-    description: "Charming rooms overlooking a quiet private garden in Paris. Fully air-conditioned with a full kitchen layout for longer stays.",
-    location: "Paris, France",
-    price: 175,
-    rating: 4.7,
-    amenities: ["wifi", "ac", "breakfast", "kitchen"],
-    image: "https://images.unsplash.com/photo-1499955085172-a104c9463ece?auto=format&fit=crop&w=600&q=80",
-    totalRooms: 4,
-    availableRooms: 4
-  },
-  {
-    title: "Miami Palm Beach Villa",
-    description: "Vibrant beachside villa with an outdoor pool, private cabanas, and valet parking. Pet-friendly and fully equipped.",
-    location: "Miami, USA",
-    price: 295,
-    rating: 4.9,
-    amenities: ["wifi", "pool", "spa", "parking", "ac", "pets"],
-    image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80",
-    totalRooms: 3,
-    availableRooms: 3
-  }
-];
-
-// Helper to seed rooms if database is empty
+// Helper to seed rooms if database is empty or lacks Indian hotels
 router.get('/seed', async (req, res) => {
   try {
     const count = await Room.countDocuments();
-    if (count === 0) {
+    const hasIndianHotels = await Room.findOne({ location: /India/i });
+    if (count < 10 || !hasIndianHotels) {
+      await Room.deleteMany({});
+      await Booking.deleteMany({});
       await Room.insertMany(initialRooms);
-      return res.status(201).json({ message: "Database seeded successfully with initial hotel listings!" });
+      return res.status(201).json({ message: "Database wiped and re-seeded with 26 premium Indian hotels!" });
     }
     res.json({ message: `Database already has ${count} listings. Seeding skipped.` });
   } catch (error) {

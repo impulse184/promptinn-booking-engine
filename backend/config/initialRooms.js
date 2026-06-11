@@ -1,0 +1,290 @@
+const initialRooms = [
+  {
+    title: "The Taj Mahal Palace, Mumbai",
+    description: "Built in 1903, this legendary flagship hotel offers scenic views of the Gateway of India and the Arabian Sea. Renowned for its world-class luxury butler services, award-winning restaurants, and heritage style.",
+    location: "Mumbai, India",
+    price: 22000,
+    rating: 4.9,
+    amenities: ["wifi", "pool", "spa", "gym", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1598977123418-45f04b01d4ec?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 10,
+    availableRooms: 10
+  },
+  {
+    title: "Taj Lake Palace, Udaipur",
+    description: "A stunning white marble palace floating in the middle of Lake Pichola. Features majestic views, luxury spa treatments on a heritage boat, and royal suites with private butler service.",
+    location: "Udaipur, India",
+    price: 38000,
+    rating: 4.9,
+    amenities: ["wifi", "pool", "spa", "ac", "breakfast"],
+    image: "https://images.unsplash.com/photo-1590001155093-a3c66ab0c3ff?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 5,
+    availableRooms: 5
+  },
+  {
+    title: "The Oberoi Amarvilas, Agra",
+    description: "Located just 600 meters from the Taj Mahal, every room offers an uninterrupted view of the world's most famous monument of love. Features terraced gardens and premier Mughal-inspired architecture.",
+    location: "Agra, India",
+    price: 32000,
+    rating: 4.8,
+    amenities: ["wifi", "pool", "spa", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 6,
+    availableRooms: 6
+  },
+  {
+    title: "Kumarakom Lake Resort, Kerala",
+    description: "Nestled on the serene banks of Vembanad Lake, this resort features heritage villas reconstructed from traditional 16th-century homesteads. Includes houseboats, infinity pools, and Ayurvedic therapies.",
+    location: "Kumarakom, India",
+    price: 18000,
+    rating: 4.7,
+    amenities: ["wifi", "pool", "spa", "ac", "breakfast", "kitchen", "parking"],
+    image: "https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 8,
+    availableRooms: 8
+  },
+  {
+    title: "Evolve Back, Kabini",
+    description: "Bordered by the Kabini River, this wildlife lodge offers luxurious hut-style villas inspired by local tribal design. Features personal private plunge pools, safari jeep tours, and boat cruises.",
+    location: "Kabini, India",
+    price: 29000,
+    rating: 4.8,
+    amenities: ["wifi", "pool", "spa", "gym", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1546548970-71785318a17b?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 5,
+    availableRooms: 5
+  },
+  {
+    title: "Rambagh Palace, Jaipur",
+    description: "Known as the Jewel of Jaipur, this former residence of the Maharaja of Jaipur features grand palatial corridors, peacock-dotted lawns, and fine fine-dining dining halls serving royal recipes.",
+    location: "Jaipur, India",
+    price: 42000,
+    rating: 4.9,
+    amenities: ["wifi", "pool", "spa", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 6,
+    availableRooms: 6
+  },
+  {
+    title: "The Leela Palace, New Delhi",
+    description: "Located in the prestigious Diplomatic Enclave, this palace hotel blends Lutyens architecture with royal Indian heritage. Features a rooftop heated pool, a luxury spa, and elegant designer rooms.",
+    location: "New Delhi, India",
+    price: 21000,
+    rating: 4.8,
+    amenities: ["wifi", "pool", "spa", "gym", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 12,
+    availableRooms: 12
+  },
+  {
+    title: "The Khyber Himalayan Resort, Gulmarg",
+    description: "Clad in local pine and stone, this world-class ski resort sits at 8,825 feet above sea level in the Pir Panjal mountains. Offers stunning mountain views and proximity to the Gulmarg Gondola.",
+    location: "Gulmarg, India",
+    price: 25000,
+    rating: 4.7,
+    amenities: ["wifi", "spa", "gym", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 4,
+    availableRooms: 4
+  },
+  {
+    title: "Suryagarh Jaisalmer",
+    description: "A boutique fortress hotel built with yellow sandstone in the Great Indian Thar Desert. Offers heritage hospitality, sand dune dinners, camel safaris, and indoor pool courtyard oasis.",
+    location: "Jaisalmer, India",
+    price: 15000,
+    rating: 4.7,
+    amenities: ["wifi", "pool", "spa", "ac", "breakfast", "parking", "pets"],
+    image: "https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 8,
+    availableRooms: 8
+  },
+  {
+    title: "The Tamara Coorg",
+    description: "A luxury nature retreat perched on a lush coffee plantation. Treehouse-style cottages overlooking steep mountain valleys, streams, and dense cardamom forests.",
+    location: "Coorg, India",
+    price: 14000,
+    rating: 4.6,
+    amenities: ["wifi", "pool", "spa", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 7,
+    availableRooms: 7
+  },
+  {
+    title: "Brunton Boatyard, Kochi",
+    description: "Built on a former 19th-century Victorian boatyard, this harbor-front hotel features tall ceilings, terracotta floors, and antique wood furnishings. Overlooks busy shipping lanes and dolphin pods.",
+    location: "Kochi, India",
+    price: 12000,
+    rating: 4.5,
+    amenities: ["wifi", "pool", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 10,
+    availableRooms: 10
+  },
+  {
+    title: "The Park, Calangute, Goa",
+    description: "Vibrant beachside boutique hotel steps away from Calangute beach. Offers outdoor purple pool cabanas, open-air beach lounges, local seafood dining, and pet-friendly suites.",
+    location: "Calangute, India",
+    price: 8500,
+    rating: 4.4,
+    amenities: ["wifi", "pool", "ac", "breakfast", "parking", "pets"],
+    image: "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 15,
+    availableRooms: 15
+  },
+  {
+    title: "Wildflower Hall, Shimla",
+    description: "Located 8,250 feet up in the Himalayas, this former colonial home features a heated indoor pool, outdoor hot tub looking onto snowy peaks, and mountain trail walks through pine forests.",
+    location: "Shimla, India",
+    price: 31000,
+    rating: 4.9,
+    amenities: ["wifi", "pool", "spa", "gym", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 6,
+    availableRooms: 6
+  },
+  {
+    title: "Brijrama Palace, Varanasi",
+    description: "A heritage fort palace built on the Ganges River in 1812. Overlooks Darbhanga Ghat, offering classical music recitals, boat tours, and direct access to holy temples.",
+    location: "Varanasi, India",
+    price: 16000,
+    rating: 4.8,
+    amenities: ["wifi", "ac", "breakfast"],
+    image: "https://images.unsplash.com/photo-1561361513-2d000a50f0db?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 5,
+    availableRooms: 5
+  },
+  {
+    title: "The Machan, Lonavala",
+    description: "A unique eco-resort featuring luxury treehouse cabins suspended 45 feet above the forest canopy. Powered by wind and solar, offering valley views and hiking trails.",
+    location: "Lonavala, India",
+    price: 13500,
+    rating: 4.5,
+    amenities: ["wifi", "spa", "breakfast", "parking", "kitchen"],
+    image: "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 6,
+    availableRooms: 6
+  },
+  {
+    title: "Barefoot at Havelock, Andaman",
+    description: "Rustic luxury villas and cottages set in the rainforest right behind Radhanagar Beach. Offers scuba diving, snorkeling in crystal-clear waters, and jungle treks.",
+    location: "Havelock Island, India",
+    price: 17500,
+    rating: 4.7,
+    amenities: ["wifi", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 8,
+    availableRooms: 8
+  },
+  {
+    title: "Marari Beach Resort, Mararikulam",
+    description: "Spread across 30 acres of beach lawns, this eco-resort offers organic farm-to-table dining, local butterfly gardens, and traditional thatch-roofed Kerala beach villas.",
+    location: "Mararikulam, India",
+    price: 11000,
+    rating: 4.6,
+    amenities: ["wifi", "pool", "ac", "breakfast", "parking", "kitchen"],
+    image: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 9,
+    availableRooms: 9
+  },
+  {
+    title: "Neeralaya, Kullu",
+    description: "A boutique cottage stay sitting on the banks of the Beas River. Built using local river stones and timber, surrounded by apple orchards and views of the snow-clad peaks.",
+    location: "Kullu, India",
+    price: 9500,
+    rating: 4.6,
+    amenities: ["wifi", "ac", "breakfast", "parking", "kitchen", "pets"],
+    image: "https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 6,
+    availableRooms: 6
+  },
+  {
+    title: "Ahilya Fort, Maheshwar",
+    description: "Perched high on the ancient ramparts of Maheshwar Fort overlooking the Narmada River. Offers absolute serenity, locally-sourced organic meals, and handloom weaving tours.",
+    location: "Maheshwar, India",
+    price: 22000,
+    rating: 4.8,
+    amenities: ["wifi", "pool", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 5,
+    availableRooms: 5
+  },
+  {
+    title: "ITC Grand Chola, Chennai",
+    description: "A monumental luxury hotel constructed as an architectural tribute to the Chola Dynasty. Features 10 dining destinations, 3 pools, and a 23,000 sq ft wellness spa.",
+    location: "Chennai, India",
+    price: 12500,
+    rating: 4.7,
+    amenities: ["wifi", "pool", "spa", "gym", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 14,
+    availableRooms: 14
+  },
+  {
+    title: "Ri Kynjai, Shillong",
+    description: "Perched above the beautiful Umiam Lake, this hotel's architecture takes inspiration from traditional Khasi thatch cottages. Features pine forest trails and local herbal spa.",
+    location: "Shillong, India",
+    price: 11500,
+    rating: 4.6,
+    amenities: ["wifi", "spa", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 6,
+    availableRooms: 6
+  },
+  {
+    title: "Svatma, Thanjavur",
+    description: "A restored heritage hotel celebrating Tamil art and culture. Offers traditional Carnatic music performances, temple architecture tours, and bronze-casting workshops.",
+    location: "Thanjavur, India",
+    price: 10500,
+    rating: 4.5,
+    amenities: ["wifi", "pool", "spa", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 7,
+    availableRooms: 7
+  },
+  {
+    title: "The Leela Palace, Udaipur",
+    description: "A majestic modern palace built on the banks of Lake Pichola. Features elegant royal dome details, outdoor pool, and private lake cruises at sunset.",
+    location: "Udaipur, India",
+    price: 35000,
+    rating: 4.9,
+    amenities: ["wifi", "pool", "spa", "gym", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 10,
+    availableRooms: 10
+  },
+  {
+    title: "Glenburn Tea Estate, Darjeeling",
+    description: "A historic colonial tea planter's bungalow looking directly onto Mount Kanchenjunga. Offers tea leaf picking, river camping, and gourmet private dining.",
+    location: "Darjeeling, India",
+    price: 35000,
+    rating: 4.9,
+    amenities: ["wifi", "ac", "breakfast", "parking", "kitchen"],
+    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 4,
+    availableRooms: 4
+  },
+  {
+    title: "Taj Falaknuma Palace, Hyderabad",
+    description: "Located 2,000 feet above Hyderabad, this 1894 palace features grand marble staircases, Venetian chandeliers, and Nizam family portraits. Arrive in horse-drawn carriages.",
+    location: "Hyderabad, India",
+    price: 44000,
+    rating: 4.9,
+    amenities: ["wifi", "pool", "spa", "gym", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 8,
+    availableRooms: 8
+  },
+  {
+    title: "Umaid Bhawan Palace, Jodhpur",
+    description: "Built between 1928 and 1943, this heritage yellow-sandstone luxury hotel sits on Jodhpur's highest hill. Features Art Deco architecture, indoor pools, and museum collections.",
+    location: "Jodhpur, India",
+    price: 45000,
+    rating: 4.9,
+    amenities: ["wifi", "pool", "spa", "gym", "ac", "breakfast", "parking"],
+    image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80",
+    totalRooms: 12,
+    availableRooms: 12
+  }
+];
+
+export default initialRooms;

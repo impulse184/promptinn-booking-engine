@@ -12,10 +12,10 @@ export default function SearchConsole() {
   }, [prompt]);
 
   const suggestions = [
-    "Luxury hotel in Tokyo with pool and spa under 400",
-    "Cheap room in London with free breakfast",
-    "Pet-friendly suites in Seattle with gym and ac",
-    "Paris boutique stay with kitchen under 200"
+    "Luxury palace in Udaipur with pool and spa",
+    "Budget stay in Goa near beach under 3000",
+    "Pet-friendly cottage in Munnar with gym and ac",
+    "Jaipur boutique hotel with breakfast under 5000"
   ];
 
   const handleSubmit = (e) => {
@@ -96,7 +96,7 @@ export default function SearchConsole() {
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Type your natural language request (e.g. 'cozy cottage in London with wifi under 150')"
+            placeholder="Type your natural language request (e.g. 'heritage hotel in Udaipur with wifi under 6000')"
             className="search-input-field"
           />
 

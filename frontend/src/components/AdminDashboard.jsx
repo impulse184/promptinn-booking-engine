@@ -279,7 +279,7 @@ export default function AdminDashboard() {
           </div>
           <div className="stat-info">
             <span className="stat-label">Gross Revenue</span>
-            <span className="stat-value" style={{ color: '#10b981' }}>${totalRevenue.toLocaleString()}</span>
+            <span className="stat-value" style={{ color: '#10b981' }}>₹{totalRevenue.toLocaleString()}</span>
           </div>
         </div>
 
@@ -360,7 +360,7 @@ export default function AdminDashboard() {
                           </div>
                         </td>
                         <td style={{ color: 'hsl(var(--text-secondary))' }}>{room.location}</td>
-                        <td style={{ fontWeight: '700', color: 'white' }}>${room.price}/night</td>
+                        <td style={{ fontWeight: '700', color: 'white' }}>₹{room.price}/night</td>
                         <td>
                           <span style={{ fontWeight: '600' }}>
                             {room.availableRooms} / {room.totalRooms}
@@ -416,7 +416,7 @@ export default function AdminDashboard() {
                       <tr key={booking._id}>
                         <td style={{ fontWeight: '600', color: 'white' }}>{booking.customerName}</td>
                         <td style={{ color: 'hsl(var(--text-secondary))' }}>{booking.room?.title || 'Deleted Room'}</td>
-                        <td style={{ fontWeight: '700', color: '#10b981' }}>${booking.totalPrice}</td>
+                        <td style={{ fontWeight: '700', color: '#10b981' }}>₹{booking.totalPrice}</td>
                         <td style={{ color: 'hsl(var(--text-secondary))' }}>{new Date(booking.checkIn).toLocaleDateString()}</td>
                         <td style={{ color: 'hsl(var(--text-secondary))' }}>{new Date(booking.checkOut).toLocaleDateString()}</td>
                         <td>
@@ -743,7 +743,7 @@ export default function AdminDashboard() {
                   <option value="" disabled>Select a room listing</option>
                   {allRooms.map((room) => (
                     <option key={room._id} value={room._id}>
-                      {room.title} (${room.price}/night)
+                      {room.title} (₹{room.price}/night)
                     </option>
                   ))}
                 </select>

@@ -89,7 +89,7 @@ export default function RoomCard({ room }) {
         {/* Pricing and Action */}
         <div className="room-card-footer">
           <div className="room-card-price">
-            <h4>${room.price}</h4>
+            <h4>₹{room.price}</h4>
             <span>/ night</span>
           </div>
 
