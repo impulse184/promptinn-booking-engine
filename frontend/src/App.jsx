@@ -580,7 +580,7 @@ export default function App() {
                     height="100%"
                     frameBorder="0"
                     style={{ border: 0 }}
-                    src={`https://maps.google.com/maps?q=${encodeURIComponent(bookingRoom.location)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(bookingRoom.mapQuery || bookingRoom.location)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
                     allowFullScreen
                     title="Hotel Location Map"
                   ></iframe>

@@ -29,8 +29,21 @@ export default function RoomCard({ room }) {
 
   const isSoldOut = room.availableRooms <= 0;
 
+  const handleCardClick = (e) => {
+    if (e.target.closest('button') || e.target.tagName === 'BUTTON') {
+      return;
+    }
+    if (!isSoldOut) {
+      setBookingRoom(room);
+    }
+  };
+
   return (
-    <div className="room-card glass-panel glass-panel-hover">
+    <div 
+      className="room-card glass-panel glass-panel-hover"
+      onClick={handleCardClick}
+      style={{ cursor: isSoldOut ? 'default' : 'pointer' }}
+    >
       {/* Room Image */}
       <div className="room-card-image-wrapper">
         <img

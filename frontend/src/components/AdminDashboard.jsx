@@ -43,7 +43,8 @@ export default function AdminDashboard() {
     rating: '4.5',
     amenitiesString: '',
     image: '',
-    totalRooms: '5'
+    totalRooms: '5',
+    mapQuery: ''
   });
 
   // User Form Modal States
@@ -74,7 +75,8 @@ export default function AdminDashboard() {
       rating: '4.5',
       amenitiesString: '',
       image: '',
-      totalRooms: '5'
+      totalRooms: '5',
+      mapQuery: ''
     });
   };
 
@@ -94,7 +96,8 @@ export default function AdminDashboard() {
       amenitiesString: room.amenities.join(', '),
       image: room.image,
       totalRooms: room.totalRooms.toString(),
-      availableRooms: room.availableRooms.toString()
+      availableRooms: room.availableRooms.toString(),
+      mapQuery: room.mapQuery || ''
     });
   };
 
@@ -113,7 +116,8 @@ export default function AdminDashboard() {
       rating: Number(roomFormData.rating),
       amenities: cleanAmenities,
       image: roomFormData.image,
-      totalRooms: Number(roomFormData.totalRooms)
+      totalRooms: Number(roomFormData.totalRooms),
+      mapQuery: roomFormData.mapQuery || ''
     };
 
     if (editingRoom) {
@@ -548,23 +552,34 @@ export default function AdminDashboard() {
                     required
                     value={roomFormData.location}
                     onChange={(e) => setRoomFormData({ ...roomFormData, location: e.target.value })}
-                    placeholder="e.g. Kyoto, Japan"
+                    placeholder="e.g. Mumbai, India"
                     className="form-input-field"
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Nightly Rate (USD)</label>
+                  <label>Nightly Rate (INR / ₹)</label>
                   <input
                     type="number"
                     required
                     min="1"
                     value={roomFormData.price}
                     onChange={(e) => setRoomFormData({ ...roomFormData, price: e.target.value })}
-                    placeholder="e.g. 150"
+                    placeholder="e.g. 8500"
                     className="form-input-field"
                   />
                 </div>
+              </div>
+
+              <div className="form-group">
+                <label>Exact Location on Map (Address, Coordinates, or Search Query)</label>
+                <input
+                  type="text"
+                  value={roomFormData.mapQuery}
+                  onChange={(e) => setRoomFormData({ ...roomFormData, mapQuery: e.target.value })}
+                  placeholder="e.g. Nariman Point, Mumbai or 18.9219, 72.8331"
+                  className="form-input-field"
+                />
               </div>
 
               <div className="form-row-grid">
