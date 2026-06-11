@@ -645,6 +645,24 @@ export default function AdminDashboard() {
                   placeholder="e.g. Nariman Point, Mumbai or 18.9219, 72.8331"
                   className="form-input-field"
                 />
+                
+                {/* Live map pin preview */}
+                <div style={{ marginTop: '10px' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'hsl(var(--text-secondary))', display: 'block', marginBottom: '6px', fontWeight: '500' }}>
+                    Live Map Pin Preview:
+                  </span>
+                  <div className="map-embed-wrapper" style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', height: '180px' }}>
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      frameBorder="0"
+                      style={{ border: 0 }}
+                      src={`https://maps.google.com/maps?q=${encodeURIComponent(roomFormData.mapQuery || roomFormData.location || 'Mumbai')}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                      allowFullScreen
+                      title="Hotel Location Map Preview"
+                    ></iframe>
+                  </div>
+                </div>
               </div>
 
               <div className="form-row-grid">

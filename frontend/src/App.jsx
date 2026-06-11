@@ -39,13 +39,9 @@ export default function App() {
 
   // Booking & Payment States
   const [customerName, setCustomerName] = useState('');
-  const [bookingStep, setBookingStep] = useState('details'); // 'details' | 'payment' | 'success'
+  const [bookingStep, setBookingStep] = useState('details'); // 'details' | 'success'
   const [confirmedBooking, setConfirmedBooking] = useState(null);
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardCvv, setCardCvv] = useState('');
-  const [cardName, setCardName] = useState('');
-  const [isPaying, setIsPaying] = useState(false);
+  const [isBooking, setIsBooking] = useState(false);
   const [activeImage, setActiveImage] = useState('');
   const [lightboxImage, setLightboxImage] = useState(null);
   
@@ -118,25 +114,16 @@ export default function App() {
     }
   }, [checkIn, checkOut, bookingRoom]);
 
-  const handleProceedToPayment = (e) => {
+  const handleBookingSubmit = async (e) => {
     e.preventDefault();
     if (!customerName.trim()) {
       alert('Please enter your name.');
       return;
     }
-    setBookingStep('payment');
-  };
 
-  const handleBookingSubmit = async (e) => {
-    e.preventDefault();
-    if (!cardNumber || !cardExpiry || !cardCvv || !cardName) {
-      alert('Please enter complete mock card details.');
-      return;
-    }
-
-    setIsPaying(true);
-    // Simulate a brief mock payment gateway delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    setIsBooking(true);
+    // Simulate a brief reservation delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const payload = {
       roomId: bookingRoom._id,
@@ -146,7 +133,7 @@ export default function App() {
     };
 
     const bookingResult = await placeBooking(payload);
-    setIsPaying(false);
+    setIsBooking(false);
     if (bookingResult) {
       setConfirmedBooking(bookingResult);
       setBookingStep('success');
@@ -160,10 +147,6 @@ export default function App() {
     setBookingStep('details');
     setConfirmedBooking(null);
     setCustomerName('');
-    setCardNumber('');
-    setCardExpiry('');
-    setCardCvv('');
-    setCardName('');
   };
 
   return (
@@ -665,7 +648,7 @@ export default function App() {
                     <h3 style={{ color: 'hsl(var(--text-primary))', fontWeight: '800', fontSize: '1.35rem', marginTop: '4px' }}>Book Your Stay</h3>
                   </div>
 
-                  <form onSubmit={handleProceedToPayment} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
+                  <form onSubmit={handleBookingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
                     <div className="form-group">
                       <label>Guest Full Name</label>
                       <input
@@ -718,144 +701,20 @@ export default function App() {
 
                     <button
                       type="submit"
+                      disabled={isBooking}
                       className="btn btn-primary"
                       style={{ padding: '12px', fontSize: '0.9rem', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                     >
-                      <CreditCard className="w-4 h-4" />
-                      Proceed to Checkout
+                      {isBooking ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" /> Confirming...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="w-4 h-4" /> Book & Confirm
+                        </>
+                      )}
                     </button>
-                  </form>
-                </div>
-              )}
-
-              {/* STEP 2: Secure Mock Checkout */}
-              {bookingStep === 'payment' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%' }}>
-                  <div style={{ borderBottom: '1px solid hsl(var(--border-color))', paddingBottom: '1rem', marginBottom: '0.5rem' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Lock className="w-3 h-3" /> Secure Mock Payment
-                    </span>
-                    <h3 style={{ color: 'hsl(var(--text-primary))', fontWeight: '800', fontSize: '1.35rem', marginTop: '4px' }}>Complete Checkout</h3>
-                  </div>
-
-                  <form onSubmit={handleBookingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem', flex: 1 }}>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', padding: '12px', backgroundColor: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.15)', borderRadius: '8px', fontSize: '0.75rem', color: '#34d399', lineHeight: '1.4' }}>
-                      <strong>⚠️ Simulation Gateway:</strong>
-                      This is a secure mock sandbox. You can enter any mock card details to proceed. No real charges will be made.
-                    </div>
-
-                    <div className="form-group">
-                      <label>Name on Card</label>
-                      <input
-                        type="text"
-                        required
-                        value={cardName}
-                        onChange={(e) => setCardName(e.target.value)}
-                        placeholder="e.g. JOHN DOE"
-                        className="form-input-field"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label>Card Number</label>
-                      <input
-                        type="text"
-                        required
-                        maxLength="19"
-                        value={cardNumber}
-                        onChange={(e) => {
-                          const v = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-                          const matches = v.match(/\d{4,16}/g);
-                          const match = (matches && matches[0]) || '';
-                          const parts = [];
-                          for (let i=0, len=match.length; i<len; i+=4) {
-                            parts.push(match.substring(i, i+4));
-                          }
-                          if (parts.length > 0) {
-                            setCardNumber(parts.join(' '));
-                          } else {
-                            setCardNumber(v);
-                          }
-                        }}
-                        placeholder="4111 2222 3333 4444"
-                        className="form-input-field"
-                      />
-                    </div>
-
-                    <div className="form-row-grid">
-                      <div className="form-group">
-                        <label>Expiry Date</label>
-                        <input
-                          type="text"
-                          required
-                          maxLength="5"
-                          value={cardExpiry}
-                          onChange={(e) => {
-                            const v = e.target.value.replace(/\//g, '').replace(/[^0-9]/gi, '');
-                            if (v.length >= 2) {
-                              setCardExpiry(v.substring(0,2) + '/' + v.substring(2,4));
-                            } else {
-                              setCardExpiry(v);
-                            }
-                          }}
-                          placeholder="MM/YY"
-                          className="form-input-field"
-                        />
-                      </div>
-
-                      <div className="form-group">
-                        <label>CVC / CVV</label>
-                        <input
-                          type="password"
-                          required
-                          maxLength="3"
-                          value={cardCvv}
-                          onChange={(e) => setCardCvv(e.target.value.replace(/[^0-9]/gi, ''))}
-                          placeholder="123"
-                          className="form-input-field"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Cost Summary */}
-                    <div style={{ backgroundColor: 'rgba(0,0,0,0.02)', padding: '12px', borderRadius: '8px', border: '1px solid hsl(var(--border-color))', marginTop: 'auto' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'hsl(var(--text-secondary))' }}>
-                        <span>Booking Charge:</span>
-                        <span>{nights} night(s) Stay</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: '700', color: 'hsl(var(--text-primary))', marginTop: '6px', borderTop: '1px solid hsl(var(--border-color))', paddingTop: '6px' }}>
-                        <span>Total Price (INR):</span>
-                        <span style={{ color: 'hsl(var(--accent-secondary))' }}>₹{totalPrice}</span>
-                      </div>
-                    </div>
-
-                    <div className="modal-action-row" style={{ border: 'none', padding: 0 }}>
-                      <button
-                        type="button"
-                        onClick={() => setBookingStep('details')}
-                        className="btn btn-secondary"
-                        style={{ flex: 1, padding: '10px' }}
-                      >
-                        Back
-                      </button>
-                      <button
-                        type="submit"
-                        disabled={isPaying}
-                        className="btn btn-primary"
-                        style={{ flex: 2, padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                      >
-                        {isPaying ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" /> Authorization...
-                          </>
-                        ) : (
-                          <>
-                            <Check className="w-4 h-4" /> Pay & Confirm
-                          </>
-                        )}
-                      </button>
-                    </div>
                   </form>
                 </div>
               )}
@@ -871,7 +730,7 @@ export default function App() {
 
                   <div>
                     <h3 style={{ color: 'hsl(var(--text-primary))', fontWeight: '800', fontSize: '1.5rem', marginBottom: '6px' }}>Booking Confirmed!</h3>
-                    <p style={{ color: '#059669', fontSize: '0.85rem', fontWeight: '500' }}>Your mock payment was completed successfully.</p>
+                    <p style={{ color: '#059669', fontSize: '0.85rem', fontWeight: '500' }}>Your reservation has been confirmed.</p>
                   </div>
 
                   {/* Booking Receipt Summary Card */}
