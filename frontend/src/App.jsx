@@ -16,7 +16,8 @@ import {
   MapPin,
   CreditCard,
   Calendar,
-  CheckCircle
+  CheckCircle,
+  Maximize2
 } from 'lucide-react';
 
 export default function App() {
@@ -46,6 +47,7 @@ export default function App() {
   const [cardName, setCardName] = useState('');
   const [isPaying, setIsPaying] = useState(false);
   const [activeImage, setActiveImage] = useState('');
+  const [lightboxImage, setLightboxImage] = useState(null);
   
   // Auth Page State
   const [isRegistering, setIsRegistering] = useState(false);
@@ -523,7 +525,10 @@ export default function App() {
             {/* LEFT PANE: Details & Location Map */}
             <div className="details-left-pane">
               {/* Hotel Image Banner */}
-              <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', height: '320px', width: '100%', border: '1px solid rgba(0,0,0,0.08)' }}>
+              <div 
+                onClick={() => setLightboxImage(activeImage || bookingRoom.image)}
+                style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', height: '320px', width: '100%', border: '1px solid rgba(0,0,0,0.08)', cursor: 'zoom-in' }}
+              >
                 <img
                   src={activeImage || bookingRoom.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80"}
                   alt={bookingRoom.title}
@@ -532,6 +537,11 @@ export default function App() {
                 <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(15,23,42,0.65)', backdropFilter: 'blur(8px)', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '6px', color: 'white', fontSize: '0.85rem', fontWeight: '600' }}>
                   <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                   <span>{bookingRoom.rating.toFixed(1)} / 5.0</span>
+                </div>
+                {/* Click to expand overlay badge */}
+                <div style={{ position: 'absolute', bottom: '16px', right: '16px', background: 'rgba(15,23,42,0.65)', backdropFilter: 'blur(8px)', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '6px', color: 'white', fontSize: '0.8rem', fontWeight: '500' }}>
+                  <Maximize2 className="w-3.5 h-3.5" />
+                  <span>Click to expand</span>
                 </div>
               </div>
 
@@ -918,6 +928,63 @@ export default function App() {
             </div>
 
           </div>
+        </div>
+      )}
+
+      {/* Fullscreen Lightbox Modal */}
+      {lightboxImage && (
+        <div 
+          className="modal-overlay" 
+          onClick={() => setLightboxImage(null)}
+          style={{ 
+            backgroundColor: 'rgba(0, 0, 0, 0.9)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            zIndex: 100, 
+            padding: '2rem' 
+          }}
+        >
+          {/* Close Button */}
+          <button
+            onClick={() => setLightboxImage(null)}
+            style={{ 
+              position: 'absolute', 
+              top: '24px', 
+              right: '24px', 
+              background: 'rgba(255,255,255,0.1)', 
+              border: '1px solid rgba(255,255,255,0.2)', 
+              borderRadius: '50%', 
+              width: '44px', 
+              height: '44px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              color: 'white', 
+              cursor: 'pointer',
+              zIndex: 101,
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          {/* Lightbox Image */}
+          <img 
+            src={lightboxImage} 
+            alt="Expanded view" 
+            style={{ 
+              maxWidth: '90vw', 
+              maxHeight: '85vh', 
+              objectFit: 'contain', 
+              borderRadius: '8px', 
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              border: '2px solid rgba(255,255,255,0.1)' 
+            }}
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image itself
+          />
         </div>
       )}
     </div>

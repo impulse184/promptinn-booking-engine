@@ -544,20 +544,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .listings-grid {
   display: grid !important;
-  grid-template-cols: repeat(3, 1fr) !important;
+  grid-template-columns: repeat(3, 1fr) !important;
   gap: 1.5rem !important;
   width: 100% !important;
 }
 
 @media (max-width: 850px) {
   .listings-grid {
-    grid-template-cols: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 
 @media (max-width: 550px) {
   .listings-grid {
-    grid-template-cols: 1fr !important;
+    grid-template-columns: 1fr !important;
   }
 }
 
@@ -774,13 +774,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .admin-stats-grid {
   display: grid;
-  grid-template-cols: 1fr;
+  grid-template-columns: 1fr;
   gap: 1rem;
 }
 
 @media (min-width: 768px) {
   .admin-stats-grid {
-    grid-template-cols: repeat(4, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -827,13 +827,13 @@ h1, h2, h3, h4, h5, h6 {
 /* Admin layout split */
 .admin-workspace-grid {
   display: grid;
-  grid-template-cols: 1fr;
+  grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
 @media (min-width: 1024px) {
   .admin-workspace-grid {
-    grid-template-cols: 2fr 1fr;
+    grid-template-columns: 2fr 1fr;
   }
 }
 
@@ -1094,7 +1094,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .form-row-grid {
   display: grid;
-  grid-template-cols: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
