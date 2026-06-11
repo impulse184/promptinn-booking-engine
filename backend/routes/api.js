@@ -310,6 +310,9 @@ router.get('/bookings', async (req, res) => {
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
 // Bookings: Update booking (Admin/User)
 router.put('/bookings/:id', async (req, res) => {
   try {
