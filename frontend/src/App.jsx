@@ -558,7 +558,7 @@ export default function App() {
                     {/* Additional image urls */}
                     {bookingRoom.images.map((url, idx) => (
                       <div 
-                        key={url}
+                        key={idx}
                         onClick={() => setActiveImage(url)}
                         style={{ 
                           width: '76px', 

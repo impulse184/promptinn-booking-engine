@@ -14,6 +14,17 @@ import {
   Calendar 
 } from 'lucide-react';
 
+// Helper to convert Google Drive sharing links to direct image URLs
+const convertGoogleDriveLink = (url) => {
+  if (!url) return url;
+  // Match drive.google.com/file/d/FILE_ID/view or drive.google.com/open?id=FILE_ID
+  const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+  }
+  return url;
+};
+
 export default function AdminDashboard() {
   const { 
     allRooms, 
@@ -658,34 +669,87 @@ export default function AdminDashboard() {
 
               <div className="form-group">
                 <label>Primary Hotel Image</label>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePrimaryImageUpload}
-                    className="form-input-field"
-                    style={{ flex: 1, color: 'white', backgroundColor: 'rgba(15,23,42,0.85)' }}
-                  />
-                  {roomFormData.image && (
-                    <img 
-                      src={roomFormData.image} 
-                      alt="Preview" 
-                      style={{ width: '50px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid hsl(var(--border-color))' }} 
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePrimaryImageUpload}
+                      className="form-input-field"
+                      style={{ flex: 1, color: 'white', backgroundColor: 'rgba(15,23,42,0.85)' }}
                     />
-                  )}
+                    {roomFormData.image && (
+                      <img 
+                        src={roomFormData.image} 
+                        alt="Preview" 
+                        style={{ width: '50px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid hsl(var(--border-color))' }} 
+                      />
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    value={roomFormData.image}
+                    onChange={(e) => setRoomFormData({ ...roomFormData, image: convertGoogleDriveLink(e.target.value) })}
+                    placeholder="Or paste image URL (Google Drive links auto-convert)"
+                    className="form-input-field"
+                  />
                 </div>
               </div>
 
               <div className="form-group">
                 <label>Additional Gallery Photos</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleGalleryImagesUpload}
-                  className="form-input-field"
-                  style={{ color: 'white', backgroundColor: 'rgba(15,23,42,0.85)' }}
-                />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleGalleryImagesUpload}
+                    className="form-input-field"
+                    style={{ color: 'white', backgroundColor: 'rgba(15,23,42,0.85)' }}
+                  />
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      type="text"
+                      id="new-gallery-url-input"
+                      placeholder="Or paste an image URL and press Enter / click Add"
+                      className="form-input-field"
+                      style={{ flex: 1 }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const val = e.target.value.trim();
+                          if (val) {
+                            setRoomFormData(prev => ({
+                              ...prev,
+                              images: [...(prev.images || []), convertGoogleDriveLink(val)]
+                            }));
+                            e.target.value = '';
+                          }
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      style={{ padding: '8px 12px', fontSize: '0.8rem' }}
+                      onClick={() => {
+                        const input = document.getElementById('new-gallery-url-input');
+                        if (input) {
+                          const val = input.value.trim();
+                          if (val) {
+                            setRoomFormData(prev => ({
+                              ...prev,
+                              images: [...(prev.images || []), convertGoogleDriveLink(val)]
+                            }));
+                            input.value = '';
+                          }
+                        }
+                      }}
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
                 {roomFormData.images && roomFormData.images.length > 0 && (
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '6px' }}>
                     {roomFormData.images.map((img, idx) => (

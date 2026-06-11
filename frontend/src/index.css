@@ -543,21 +543,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .listings-grid {
-  display: grid;
-  grid-template-cols: 1fr;
-  gap: 1.5rem;
-  width: 100%;
+  display: grid !important;
+  grid-template-cols: repeat(3, 1fr) !important;
+  gap: 1.5rem !important;
+  width: 100% !important;
 }
 
-@media (min-width: 600px) {
+@media (max-width: 850px) {
   .listings-grid {
-    grid-template-cols: repeat(2, 1fr);
+    grid-template-cols: repeat(2, 1fr) !important;
   }
 }
 
-@media (min-width: 768px) {
+@media (max-width: 550px) {
   .listings-grid {
-    grid-template-cols: repeat(3, 1fr) !important;
+    grid-template-cols: 1fr !important;
   }
 }
 
