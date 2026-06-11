@@ -504,7 +504,7 @@ export default function App() {
             <button
               onClick={handleCloseBookingModal}
               className="modal-close-btn"
-              style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 10, background: 'rgba(15,23,42,0.3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}
+              style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 10, background: 'rgba(0,0,0,0.05)', border: '1px solid hsl(var(--border-color))', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(var(--text-primary))' }}
             >
               <X className="w-5 h-5" />
             </button>
@@ -537,7 +537,7 @@ export default function App() {
 
               {/* Room Description */}
               <div>
-                <h4 style={{ color: 'white', fontWeight: '700', fontSize: '1rem', marginBottom: '8px' }}>About this listing</h4>
+                <h4 style={{ color: 'hsl(var(--text-primary))', fontWeight: '700', fontSize: '1rem', marginBottom: '8px' }}>About this listing</h4>
                 <p style={{ color: 'hsl(var(--text-secondary))', fontSize: '0.9rem', lineHeight: '1.6' }}>
                   {bookingRoom.description}
                 </p>
@@ -545,7 +545,7 @@ export default function App() {
 
               {/* Amenities List */}
               <div>
-                <h4 style={{ color: 'white', fontWeight: '700', fontSize: '1rem', marginBottom: '10px' }}>Features & Amenities</h4>
+                <h4 style={{ color: 'hsl(var(--text-primary))', fontWeight: '700', fontSize: '1rem', marginBottom: '10px' }}>Features & Amenities</h4>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {bookingRoom.amenities.map((amenity) => {
                     const maps = {
@@ -571,7 +571,7 @@ export default function App() {
 
               {/* Interactive Location Map */}
               <div>
-                <h4 style={{ color: 'white', fontWeight: '700', fontSize: '1rem', marginBottom: '4px' }}>Location Map</h4>
+                <h4 style={{ color: 'hsl(var(--text-primary))', fontWeight: '700', fontSize: '1rem', marginBottom: '4px' }}>Location Map</h4>
                 <p style={{ color: 'hsl(var(--text-muted))', fontSize: '0.75rem', marginBottom: '12px' }}>Explore the neighborhood and transport links below.</p>
                 
                 <div className="map-embed-wrapper" style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', height: '260px' }}>
@@ -595,9 +595,9 @@ export default function App() {
               {/* STEP 1: Details & Setup Dates */}
               {bookingStep === 'details' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%' }}>
-                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '1rem', marginBottom: '0.5rem' }}>
+                  <div style={{ borderBottom: '1px solid hsl(var(--border-color))', paddingBottom: '1rem', marginBottom: '0.5rem' }}>
                     <span style={{ fontSize: '0.75rem', color: 'hsl(var(--text-muted))', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '600' }}>Reservation Setup</span>
-                    <h3 style={{ color: 'white', fontWeight: '800', fontSize: '1.35rem', marginTop: '4px' }}>Book Your Stay</h3>
+                    <h3 style={{ color: 'hsl(var(--text-primary))', fontWeight: '800', fontSize: '1.35rem', marginTop: '4px' }}>Book Your Stay</h3>
                   </div>
 
                   <form onSubmit={handleProceedToPayment} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
@@ -636,14 +636,14 @@ export default function App() {
                     </div>
 
                     {/* Pricing breakdown box */}
-                    <div className="price-breakdown-box" style={{ marginTop: 'auto', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <div className="price-breakdown-box" style={{ marginTop: 'auto', backgroundColor: 'rgba(0,0,0,0.02)', border: '1px solid hsl(var(--border-color))' }}>
                       <div className="price-breakdown-row">
                         <span>Rate:</span>
-                        <span style={{ color: 'white', fontWeight: '600' }}>₹{bookingRoom.price} / night</span>
+                        <span style={{ color: 'hsl(var(--text-primary))', fontWeight: '600' }}>₹{bookingRoom.price} / night</span>
                       </div>
                       <div className="price-breakdown-row">
                         <span>Duration:</span>
-                        <span style={{ color: 'white', fontWeight: '600' }}>{nights} {nights === 1 ? 'night' : 'nights'}</span>
+                        <span style={{ color: 'hsl(var(--text-primary))', fontWeight: '600' }}>{nights} {nights === 1 ? 'night' : 'nights'}</span>
                       </div>
                       <div className="price-breakdown-total" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '10px', marginTop: '10px' }}>
                         <span>Total Estimate:</span>
@@ -666,11 +666,11 @@ export default function App() {
               {/* STEP 2: Secure Mock Checkout */}
               {bookingStep === 'payment' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%' }}>
-                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '1rem', marginBottom: '0.5rem' }}>
+                  <div style={{ borderBottom: '1px solid hsl(var(--border-color))', paddingBottom: '1rem', marginBottom: '0.5rem' }}>
                     <span style={{ fontSize: '0.75rem', color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <Lock className="w-3 h-3" /> Secure Mock Payment
                     </span>
-                    <h3 style={{ color: 'white', fontWeight: '800', fontSize: '1.35rem', marginTop: '4px' }}>Complete Checkout</h3>
+                    <h3 style={{ color: 'hsl(var(--text-primary))', fontWeight: '800', fontSize: '1.35rem', marginTop: '4px' }}>Complete Checkout</h3>
                   </div>
 
                   <form onSubmit={handleBookingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem', flex: 1 }}>
@@ -754,12 +754,12 @@ export default function App() {
                     </div>
 
                     {/* Cost Summary */}
-                    <div style={{ backgroundColor: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)', marginTop: 'auto' }}>
+                    <div style={{ backgroundColor: 'rgba(0,0,0,0.02)', padding: '12px', borderRadius: '8px', border: '1px solid hsl(var(--border-color))', marginTop: 'auto' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'hsl(var(--text-secondary))' }}>
                         <span>Booking Charge:</span>
                         <span>{nights} night(s) Stay</span>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: '700', color: 'white', marginTop: '6px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '6px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: '700', color: 'hsl(var(--text-primary))', marginTop: '6px', borderTop: '1px solid hsl(var(--border-color))', paddingTop: '6px' }}>
                         <span>Total Price (INR):</span>
                         <span style={{ color: 'hsl(var(--accent-secondary))' }}>₹{totalPrice}</span>
                       </div>
@@ -805,39 +805,39 @@ export default function App() {
                   </div>
 
                   <div>
-                    <h3 style={{ color: 'white', fontWeight: '800', fontSize: '1.5rem', marginBottom: '6px' }}>Booking Confirmed!</h3>
-                    <p style={{ color: '#34d399', fontSize: '0.85rem', fontWeight: '500' }}>Your mock payment was completed successfully.</p>
+                    <h3 style={{ color: 'hsl(var(--text-primary))', fontWeight: '800', fontSize: '1.5rem', marginBottom: '6px' }}>Booking Confirmed!</h3>
+                    <p style={{ color: '#059669', fontSize: '0.85rem', fontWeight: '500' }}>Your mock payment was completed successfully.</p>
                   </div>
 
                   {/* Booking Receipt Summary Card */}
-                  <div style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem', textAlign: 'left' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '8px', marginBottom: '4px' }}>
+                  <div style={{ width: '100%', backgroundColor: 'rgba(0,0,0,0.02)', border: '1px solid hsl(var(--border-color))', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem', textAlign: 'left' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid hsl(var(--border-color))', paddingBottom: '8px', marginBottom: '4px' }}>
                       <span style={{ color: 'hsl(var(--text-muted))' }}>Reference ID:</span>
-                      <strong style={{ fontFamily: 'monospace', color: 'white' }}>{confirmedBooking?._id?.substring(0, 8).toUpperCase() || 'PINN-CONF'}</strong>
+                      <strong style={{ fontFamily: 'monospace', color: 'hsl(var(--text-primary))' }}>{confirmedBooking?._id?.substring(0, 8).toUpperCase() || 'PINN-CONF'}</strong>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'hsl(var(--text-secondary))' }}>Guest Name:</span>
-                      <span style={{ color: 'white', fontWeight: '600' }}>{confirmedBooking?.customerName}</span>
+                      <span style={{ color: 'hsl(var(--text-primary))', fontWeight: '600' }}>{confirmedBooking?.customerName}</span>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'hsl(var(--text-secondary))' }}>Room Title:</span>
-                      <span style={{ color: 'white', fontWeight: '600', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{bookingRoom.title}</span>
+                      <span style={{ color: 'hsl(var(--text-primary))', fontWeight: '600', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{bookingRoom.title}</span>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'hsl(var(--text-secondary))' }}>Check-in:</span>
-                      <span style={{ color: 'white', fontWeight: '600' }}>{new Date(checkIn).toLocaleDateString()}</span>
+                      <span style={{ color: 'hsl(var(--text-primary))', fontWeight: '600' }}>{new Date(checkIn).toLocaleDateString()}</span>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'hsl(var(--text-secondary))' }}>Check-out:</span>
-                      <span style={{ color: 'white', fontWeight: '600' }}>{new Date(checkOut).toLocaleDateString()}</span>
+                      <span style={{ color: 'hsl(var(--text-primary))', fontWeight: '600' }}>{new Date(checkOut).toLocaleDateString()}</span>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '8px', marginTop: '4px' }}>
-                      <span style={{ color: 'white', fontWeight: '700' }}>Total Paid:</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid hsl(var(--border-color))', paddingTop: '8px', marginTop: '4px' }}>
+                      <span style={{ color: 'hsl(var(--text-primary))', fontWeight: '700' }}>Total Paid:</span>
                       <strong style={{ color: '#10b981', fontSize: '1.1rem', fontWeight: '800' }}>₹{totalPrice}</strong>
                     </div>
                   </div>

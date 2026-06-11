@@ -549,13 +549,13 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
 }
 
-@media (min-width: 700px) {
+@media (min-width: 600px) {
   .listings-grid {
     grid-template-cols: repeat(2, 1fr);
   }
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 800px) {
   .listings-grid {
     grid-template-cols: repeat(3, 1fr) !important;
   }
@@ -1166,16 +1166,22 @@ h1, h2, h3, h4, h5, h6 {
   overflow: hidden !important;
   border-radius: 16px !important;
   position: relative;
+  background: #ffffff !important; /* Solid opaque white background */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid hsl(var(--border-color)) !important;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
 }
 
 .details-left-pane {
   flex: 7;
   padding: 2rem;
   overflow-y: auto;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid hsl(var(--border-color)) !important;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  background: #ffffff !important;
 }
 
 .details-right-pane {
@@ -1185,8 +1191,8 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  background: #0b0f19 !important; /* Completely opaque deep slate-black backdrop */
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  background: #f8fafc !important; /* Solid light slate off-white */
+  border-left: 1px solid hsl(var(--border-color)) !important;
 }
 
 .details-left-pane::-webkit-scrollbar,
@@ -1196,18 +1202,18 @@ h1, h2, h3, h4, h5, h6 {
 
 .details-left-pane::-webkit-scrollbar-thumb,
 .details-right-pane::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 3px;
 }
 
 .details-left-pane::-webkit-scrollbar-thumb:hover,
 .details-right-pane::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .map-embed-wrapper iframe {
-  filter: invert(90%) hue-rotate(180deg); /* Sleek dark-themed map overlay style */
-  opacity: 0.85;
+  filter: none !important; /* Light standard map theme */
+  opacity: 1 !important;
 }
 
 .payment-card-icon {
@@ -1225,49 +1231,50 @@ h1, h2, h3, h4, h5, h6 {
   .details-left-pane {
     flex: none;
     border-right: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid hsl(var(--border-color));
     overflow-y: visible;
   }
   .details-right-pane {
     flex: none;
     overflow-y: visible;
+    border-left: none !important;
   }
 }
 
-/* Opaque details-right-pane premium dark styles */
+/* Opaque details-right-pane premium light styles */
 .details-right-pane label {
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: hsl(var(--text-secondary)) !important;
 }
 
 .details-right-pane .form-input-field {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background-color: #ffffff !important;
+  color: hsl(var(--text-primary)) !important;
+  border: 1px solid hsl(var(--border-color)) !important;
 }
 
 .details-right-pane .form-input-field:focus {
-  border-color: hsl(var(--accent-secondary)) !important;
-  box-shadow: 0 0 0 1px hsl(var(--accent-secondary)) !important;
+  border-color: hsl(var(--accent-primary)) !important;
+  box-shadow: 0 0 0 1px hsl(var(--accent-primary)) !important;
 }
 
 .details-right-pane .price-breakdown-box {
-  background-color: rgba(255, 255, 255, 0.03) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(0, 0, 0, 0.015) !important;
+  border-color: hsl(var(--border-color)) !important;
 }
 
 .details-right-pane .price-breakdown-row span {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: hsl(var(--text-secondary)) !important;
 }
 
 .details-right-pane .price-breakdown-row span:nth-child(2) {
-  color: #ffffff !important;
+  color: hsl(var(--text-primary)) !important;
 }
 
 .details-right-pane .price-breakdown-total {
-  border-top-color: rgba(255, 255, 255, 0.08) !important;
-  color: #ffffff !important;
+  border-top-color: hsl(var(--border-color)) !important;
+  color: hsl(var(--text-primary)) !important;
 }
 
 .details-right-pane .price-breakdown-total span:nth-child(2) {
-  color: hsl(var(--accent-secondary)) !important;
+  color: hsl(var(--accent-primary)) !important;
 }
