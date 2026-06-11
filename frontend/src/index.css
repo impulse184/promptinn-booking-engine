@@ -1278,3 +1278,7 @@ h1, h2, h3, h4, h5, h6 {
 .details-right-pane .price-breakdown-total span:nth-child(2) {
   color: hsl(var(--accent-primary)) !important;
 }
+
+.listings-grid-cache-buster-dummy-class-v2 {
+  z-index: 9999;
+}
