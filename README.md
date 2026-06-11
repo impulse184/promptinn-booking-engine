@@ -1,3 +1,13 @@
+---
+title: PromptInn AI Booking Engine
+emoji: 🏨
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # PromptInn AI Booking Engine 🏨✨
 
 PromptInn is a full-stack, AI-enhanced hotel booking platform. Instead of using traditional dropdown selectors and static sliders, users search for hotel rooms using natural language prompts (e.g., *"Find a cheap luxury hotel in Tokyo with pool and spa under $400"*). The application parses this prompt into structured MongoDB database queries via the **Google Gemini API**, fetches the matches from a live MongoDB collection, and renders them dynamically in a high-fidelity glassmorphic dashboard.
