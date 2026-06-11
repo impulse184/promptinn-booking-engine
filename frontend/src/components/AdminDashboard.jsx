@@ -181,6 +181,7 @@ export default function AdminDashboard() {
       payload.availableRooms = Number(roomFormData.availableRooms) || Number(roomFormData.totalRooms);
       const res = await updateRoom(editingRoom._id, payload);
       if (res.success) {
+        alert('Listing updated successfully!');
         setEditingRoom(null);
       } else {
         alert(res.error || 'Failed to update listing.');
@@ -188,6 +189,7 @@ export default function AdminDashboard() {
     } else {
       const res = await createRoom(payload);
       if (res.success) {
+        alert('Listing created successfully!');
         setShowAddRoomModal(false);
       } else {
         alert(res.error || 'Failed to create listing.');
