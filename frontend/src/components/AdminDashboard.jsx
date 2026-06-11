@@ -43,9 +43,9 @@ export default function AdminDashboard() {
     rating: '4.5',
     amenitiesString: '',
     image: '',
+    images: [],
     totalRooms: '5',
-    mapQuery: '',
-    imagesString: ''
+    mapQuery: ''
   });
 
   // User Form Modal States
@@ -76,9 +76,9 @@ export default function AdminDashboard() {
       rating: '4.5',
       amenitiesString: '',
       image: '',
+      images: [],
       totalRooms: '5',
-      mapQuery: '',
-      imagesString: ''
+      mapQuery: ''
     });
   };
 
@@ -97,10 +97,38 @@ export default function AdminDashboard() {
       rating: room.rating.toString(),
       amenitiesString: room.amenities.join(', '),
       image: room.image,
+      images: room.images || [],
       totalRooms: room.totalRooms.toString(),
       availableRooms: room.availableRooms.toString(),
-      mapQuery: room.mapQuery || '',
-      imagesString: room.images ? room.images.join(', ') : ''
+      mapQuery: room.mapQuery || ''
+    });
+  };
+
+  const handlePrimaryImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setRoomFormData(prev => ({ ...prev, image: reader.result }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleGalleryImagesUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    const promises = files.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(file);
+      });
+    });
+    Promise.all(promises).then(base64Images => {
+      setRoomFormData(prev => ({
+        ...prev,
+        images: [...(prev.images || []), ...base64Images]
+      }));
     });
   };
 
@@ -111,11 +139,6 @@ export default function AdminDashboard() {
       .map(item => item.trim().toLowerCase())
       .filter(item => item.length > 0);
 
-    const cleanImages = roomFormData.imagesString
-      .split(',')
-      .map(item => item.trim())
-      .filter(item => item.length > 0);
-
     const payload = {
       title: roomFormData.title,
       description: roomFormData.description,
@@ -124,7 +147,7 @@ export default function AdminDashboard() {
       rating: Number(roomFormData.rating),
       amenities: cleanAmenities,
       image: roomFormData.image,
-      images: cleanImages,
+      images: roomFormData.images || [],
       totalRooms: Number(roomFormData.totalRooms),
       mapQuery: roomFormData.mapQuery || ''
     };
@@ -634,25 +657,59 @@ export default function AdminDashboard() {
               </div>
 
               <div className="form-group">
-                <label>Image URL (Primary Hero Image)</label>
-                <input
-                  type="url"
-                  value={roomFormData.image}
-                  onChange={(e) => setRoomFormData({ ...roomFormData, image: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                  className="form-input-field"
-                />
+                <label>Primary Hotel Image</label>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePrimaryImageUpload}
+                    className="form-input-field"
+                    style={{ flex: 1, color: 'white', backgroundColor: 'rgba(15,23,42,0.85)' }}
+                  />
+                  {roomFormData.image && (
+                    <img 
+                      src={roomFormData.image} 
+                      alt="Preview" 
+                      style={{ width: '50px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid hsl(var(--border-color))' }} 
+                    />
+                  )}
+                </div>
               </div>
 
               <div className="form-group">
-                <label>Additional Gallery Images (comma-separated URLs)</label>
+                <label>Additional Gallery Photos</label>
                 <input
-                  type="text"
-                  value={roomFormData.imagesString}
-                  onChange={(e) => setRoomFormData({ ...roomFormData, imagesString: e.target.value })}
-                  placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleGalleryImagesUpload}
                   className="form-input-field"
+                  style={{ color: 'white', backgroundColor: 'rgba(15,23,42,0.85)' }}
                 />
+                {roomFormData.images && roomFormData.images.length > 0 && (
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '6px' }}>
+                    {roomFormData.images.map((img, idx) => (
+                      <div key={idx} style={{ position: 'relative', width: '50px', height: '40px' }}>
+                        <img 
+                          src={img} 
+                          alt="Thumb" 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px', border: '1px solid hsl(var(--border-color))' }} 
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newImages = [...roomFormData.images];
+                            newImages.splice(idx, 1);
+                            setRoomFormData({ ...roomFormData, images: newImages });
+                          }}
+                          style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#f43f5e', color: 'white', border: 'none', borderRadius: '50%', width: '14px', height: '14px', fontSize: '9px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="modal-action-row">

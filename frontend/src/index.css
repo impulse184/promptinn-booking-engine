@@ -555,7 +555,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   .listings-grid {
     grid-template-cols: repeat(3, 1fr) !important;
   }

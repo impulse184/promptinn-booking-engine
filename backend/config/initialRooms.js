@@ -7,6 +7,11 @@ const initialRooms = [
     rating: 4.9,
     amenities: ["wifi", "pool", "spa", "gym", "ac", "breakfast", "parking"],
     image: "https://images.unsplash.com/photo-1598977123418-45f04b01d4ec?auto=format&fit=crop&w=600&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1598977123418-45f04b01d4ec?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"
+    ],
     totalRooms: 10,
     availableRooms: 10
   },
@@ -18,6 +23,11 @@ const initialRooms = [
     rating: 4.9,
     amenities: ["wifi", "pool", "spa", "ac", "breakfast"],
     image: "https://images.unsplash.com/photo-1590001155093-a3c66ab0c3ff?auto=format&fit=crop&w=600&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1590001155093-a3c66ab0c3ff?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80"
+    ],
     totalRooms: 5,
     availableRooms: 5
   },
@@ -29,6 +39,11 @@ const initialRooms = [
     rating: 4.8,
     amenities: ["wifi", "pool", "spa", "ac", "breakfast", "parking"],
     image: "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80"
+    ],
     totalRooms: 6,
     availableRooms: 6
   },

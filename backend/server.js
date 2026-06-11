@@ -75,11 +75,12 @@ const startServer = async () => {
         console.log('📊 Admin user "aakrisht" already exists.');
       }
 
-      // Auto-seed rooms if database is empty or doesn't have Indian hotels
+      // Auto-seed rooms if database is empty, doesn't have Indian hotels, or lacks photo galleries
       const roomCount = await Room.countDocuments();
       const hasIndianHotels = await Room.findOne({ location: /India/i });
-      if (roomCount < 10 || !hasIndianHotels) {
-        console.log('🌱 Clearing old inventory and auto-seeding premium Indian hotels...');
+      const hasGallery = await Room.findOne({ images: { $exists: true, $not: { $size: 0 } } });
+      if (roomCount < 10 || !hasIndianHotels || !hasGallery) {
+        console.log('🌱 Clearing old inventory and auto-seeding premium Indian hotels with galleries...');
         await Room.deleteMany({});
         await Booking.deleteMany({}); // Clear old mock bookings to avoid orphaned references
         await Room.insertMany(initialRooms);
