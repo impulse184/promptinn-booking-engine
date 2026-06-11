@@ -11,7 +11,18 @@ export const BookingProvider = ({ children }) => {
   const [allRooms, setAllRooms] = useState([]); // Admin list / all rooms
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [role, setRole] = useState('user'); // 'user' | 'admin'
+  const [currentUser, setCurrentUser] = useState(() => {
+    const stored = sessionStorage.getItem('promptinn_user');
+    return stored ? JSON.parse(stored) : null;
+  });
+  const [role, setRole] = useState(() => {
+    const stored = sessionStorage.getItem('promptinn_user');
+    if (stored) {
+      const u = JSON.parse(stored);
+      return u.role;
+    }
+    return 'user';
+  });
   const [bookingRoom, setBookingRoom] = useState(null); // Room currently being booked
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -36,10 +47,11 @@ export const BookingProvider = ({ children }) => {
     }
   };
 
-  // Fetch all bookings
-  const fetchBookings = async () => {
+  // Fetch bookings (optional userId filter)
+  const fetchBookings = async (userId) => {
     try {
-      const res = await fetch(`${API_BASE}/api/bookings`);
+      const url = userId ? `${API_BASE}/api/bookings?userId=${userId}` : `${API_BASE}/api/bookings`;
+      const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to fetch bookings');
       const data = await res.json();
       setBookings(data);
@@ -138,7 +150,7 @@ export const BookingProvider = ({ children }) => {
       });
       if (!res.ok) throw new Error('Failed to delete room');
       await fetchRooms();
-      await fetchBookings();
+      await fetchBookings(currentUser?.role === 'admin' ? null : currentUser?._id);
       return true;
     } catch (err) {
       console.error(err);
@@ -156,7 +168,7 @@ export const BookingProvider = ({ children }) => {
       const res = await fetch(`${API_BASE}/api/bookings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bookingData)
+        body: JSON.stringify({ ...bookingData, userId: currentUser?._id })
       });
       if (!res.ok) {
         const errData = await res.json();
@@ -164,7 +176,7 @@ export const BookingProvider = ({ children }) => {
       }
       
       await fetchRooms();
-      await fetchBookings();
+      await fetchBookings(currentUser?.role === 'admin' ? null : currentUser?._id);
       setBookingRoom(null);
       return true;
     } catch (err) {
@@ -176,11 +188,71 @@ export const BookingProvider = ({ children }) => {
     }
   };
 
-  // Fetch initial data on load
+  const loginUser = async (username, password) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      setCurrentUser(data.user);
+      sessionStorage.setItem('promptinn_user', JSON.stringify(data.user));
+      setRole(data.user.role);
+      setErrorMsg('');
+      return { success: true };
+    } catch (err) {
+      console.error(err);
+      return { success: false, error: err.message };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const registerUser = async (username, password) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      setCurrentUser(data.user);
+      sessionStorage.setItem('promptinn_user', JSON.stringify(data.user));
+      setRole(data.user.role);
+      setErrorMsg('');
+      return { success: true };
+    } catch (err) {
+      console.error(err);
+      return { success: false, error: err.message };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logoutUser = () => {
+    setCurrentUser(null);
+    sessionStorage.removeItem('promptinn_user');
+    setRole('user');
+  };
+
+  // Fetch initial data on load or when user session changes
   useEffect(() => {
     fetchRooms();
-    fetchBookings();
-  }, []);
+    fetchBookings(currentUser?.role === 'admin' ? null : currentUser?._id);
+  }, [currentUser]);
 
   return (
     <BookingContext.Provider value={{
@@ -194,6 +266,10 @@ export const BookingProvider = ({ children }) => {
       role,
       bookingRoom,
       errorMsg,
+      currentUser,
+      loginUser,
+      registerUser,
+      logoutUser,
       setRole,
       setBookingRoom,
       searchByPrompt,

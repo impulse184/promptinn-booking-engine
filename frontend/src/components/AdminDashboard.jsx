@@ -71,7 +71,6 @@ export default function AdminDashboard() {
     };
 
     if (editingRoom) {
-      // Retain or reset available rooms properly based on total rooms diff
       payload.availableRooms = Number(formData.availableRooms) || Number(formData.totalRooms);
       const success = await updateRoom(editingRoom._id, payload);
       if (success) setEditingRoom(null);
@@ -94,125 +93,126 @@ export default function AdminDashboard() {
   const totalAvailableRooms = allRooms.reduce((sum, r) => sum + r.availableRooms, 0);
 
   return (
-    <div className="w-full flex flex-col gap-8">
+    <div className="admin-dashboard-container">
       {/* Admin Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold font-heading text-gradient-neon">Administrator Workspace</h2>
-          <p className="text-slate-400 text-sm">Manage room inventory, configure listings, and track guest reservations.</p>
+      <div className="admin-header-row">
+        <div className="admin-header-text">
+          <h2 className="text-gradient-neon">Administrator Workspace</h2>
+          <p>Manage room inventory, configure listings, and track guest reservations.</p>
         </div>
         
         <button
           onClick={handleOpenAdd}
           className="btn btn-primary"
+          style={{ padding: '8px 16px', fontSize: '0.85rem' }}
         >
           <Plus className="w-4 h-4" /> Add Room Listing
         </button>
       </div>
 
       {/* Analytics Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="glass-panel p-5 flex items-center gap-4">
-          <div className="p-3 bg-[hsl(var(--accent-primary))/0.15] rounded-xl text-[hsl(var(--accent-primary))]">
-            <BedDouble className="w-6 h-6" />
+      <div className="admin-stats-grid">
+        <div className="stat-card glass-panel">
+          <div className="stat-icon-wrapper">
+            <BedDouble className="w-5 h-5" />
           </div>
-          <div>
-            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wide">Active Listings</span>
-            <h4 className="text-xl font-bold font-heading mt-0.5 text-white">{activeRooms}</h4>
-          </div>
-        </div>
-
-        <div className="glass-panel p-5 flex items-center gap-4">
-          <div className="p-3 bg-[hsl(var(--accent-secondary))/0.15] rounded-xl text-[hsl(var(--accent-secondary))]">
-            <CheckCircle className="w-6 h-6" />
-          </div>
-          <div>
-            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wide">Total Bookings</span>
-            <h4 className="text-xl font-bold font-heading mt-0.5 text-white">{totalBookings}</h4>
+          <div className="stat-info">
+            <span className="stat-label">Active Listings</span>
+            <span className="stat-value">{activeRooms}</span>
           </div>
         </div>
 
-        <div className="glass-panel p-5 flex items-center gap-4">
-          <div className="p-3 bg-emerald-500/15 rounded-xl text-emerald-400">
-            <Coins className="w-6 h-6" />
+        <div className="stat-card glass-panel">
+          <div className="stat-icon-wrapper">
+            <CheckCircle className="w-5 h-5" />
           </div>
-          <div>
-            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wide">Gross Revenue</span>
-            <h4 className="text-xl font-bold font-heading mt-0.5 text-emerald-400">${totalRevenue.toLocaleString()}</h4>
+          <div className="stat-info">
+            <span className="stat-label">Total Bookings</span>
+            <span className="stat-value">{totalBookings}</span>
           </div>
         </div>
 
-        <div className="glass-panel p-5 flex items-center gap-4">
-          <div className="p-3 bg-amber-500/15 rounded-xl text-amber-400">
-            <ShieldAlert className="w-6 h-6" />
+        <div className="stat-card glass-panel">
+          <div className="stat-icon-wrapper">
+            <Coins className="w-5 h-5" />
           </div>
-          <div>
-            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wide">Net Vacancy</span>
-            <h4 className="text-xl font-bold font-heading mt-0.5 text-white">{totalAvailableRooms} rooms</h4>
+          <div className="stat-info">
+            <span className="stat-label">Gross Revenue</span>
+            <span className="stat-value" style={{ color: '#10b981' }}>${totalRevenue.toLocaleString()}</span>
+          </div>
+        </div>
+
+        <div className="stat-card glass-panel">
+          <div className="stat-icon-wrapper">
+            <ShieldAlert className="w-5 h-5" />
+          </div>
+          <div className="stat-info">
+            <span className="stat-label">Net Vacancy</span>
+            <span className="stat-value">{totalAvailableRooms} rooms</span>
           </div>
         </div>
       </div>
 
       {/* Main Grid: Listings Table & Bookings list */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="admin-workspace-grid">
         
         {/* Listings Section */}
-        <div className="lg:col-span-2 glass-panel p-6 flex flex-col gap-4">
-          <h3 className="text-lg font-bold font-heading border-b border-slate-800 pb-3 flex items-center gap-2">
-            <BedDouble className="w-4 h-4 text-[hsl(var(--accent-primary))]" /> Room Inventory
+        <div className="admin-section-card glass-panel">
+          <h3 className="admin-section-card-title">
+            <BedDouble className="w-4 h-4 text-gradient-neon" /> Room Inventory
           </h3>
           
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+          <div className="table-responsive">
+            <table className="listings-table">
               <thead>
-                <tr className="border-b border-slate-800 text-slate-500 text-xs uppercase tracking-wide">
-                  <th className="py-3 px-2">Room Details</th>
-                  <th className="py-3 px-2">Location</th>
-                  <th className="py-3 px-2">Price</th>
-                  <th className="py-3 px-2">Inventory</th>
-                  <th className="py-3 px-2 text-right">Actions</th>
+                <tr>
+                  <th>Room Details</th>
+                  <th>Location</th>
+                  <th>Price</th>
+                  <th>Inventory</th>
+                  <th style={{ textRight: 'true', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-sm">
+              <tbody>
                 {allRooms.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="py-8 text-center text-slate-500">
+                    <td colSpan="5" style={{ textAlign: 'center', color: 'hsl(var(--text-muted))', padding: '2rem 0' }}>
                       No rooms found. Click "Add Room Listing" to populate listings.
                     </td>
                   </tr>
                 ) : (
                   allRooms.map((room) => (
-                    <tr key={room._id} className="hover:bg-slate-900/30 transition-colors">
-                      <td className="py-4 px-2 flex items-center gap-3">
+                    <tr key={room._id}>
+                      <td className="table-room-meta">
                         <img
                           src={room.image}
                           alt={room.title}
-                          className="w-10 h-10 object-cover rounded-lg bg-slate-950 border border-slate-800"
+                          className="table-room-img"
                         />
-                        <div>
-                          <div className="font-bold text-white leading-snug">{room.title}</div>
-                          <div className="text-xs text-slate-500 mt-0.5 line-clamp-1">{room.description}</div>
+                        <div className="table-room-text">
+                          <div className="table-room-title">{room.title}</div>
+                          <div className="table-room-desc">{room.description}</div>
                         </div>
                       </td>
-                      <td className="py-4 px-2 text-slate-300">{room.location}</td>
-                      <td className="py-4 px-2 font-bold text-white">${room.price}</td>
-                      <td className="py-4 px-2">
-                        <span className="text-slate-300 font-medium">
+                      <td style={{ color: 'hsl(var(--text-secondary))' }}>{room.location}</td>
+                      <td style={{ fontWeight: '700', color: 'white' }}>${room.price}</td>
+                      <td>
+                        <span style={{ fontWeight: '600' }}>
                           {room.availableRooms} / {room.totalRooms}
                         </span>
                       </td>
-                      <td className="py-4 px-2 text-right">
-                        <div className="flex gap-2 justify-end">
+                      <td>
+                        <div className="table-action-row">
                           <button
                             onClick={() => handleOpenEdit(room)}
-                            className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors"
+                            className="action-btn-small action-btn-edit"
                             title="Edit Listing"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDelete(room._id)}
-                            className="p-1.5 bg-rose-950/40 hover:bg-rose-900/60 text-rose-400 hover:text-rose-300 rounded-lg transition-colors"
+                            className="action-btn-small action-btn-delete"
                             title="Delete Listing"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -228,35 +228,30 @@ export default function AdminDashboard() {
         </div>
 
         {/* Bookings Section */}
-        <div className="glass-panel p-6 flex flex-col gap-4">
-          <h3 className="text-lg font-bold font-heading border-b border-slate-800 pb-3 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[hsl(var(--accent-secondary))]" /> Recent Reservations
+        <div className="admin-section-card glass-panel">
+          <h3 className="admin-section-card-title">
+            <FileText className="w-4 h-4 text-gradient-neon" /> Recent Reservations
           </h3>
 
-          <div className="flex flex-col gap-4 max-h-[450px] overflow-y-auto pr-1">
+          <div className="bookings-stack">
             {bookings.length === 0 ? (
-              <div className="text-center py-8 text-slate-500 text-sm">
+              <div style={{ textAlign: 'center', color: 'hsl(var(--text-muted))', padding: '2rem 0', fontSize: '0.8rem' }}>
                 No reservations logged yet.
               </div>
             ) : (
               bookings.map((booking) => (
-                <div
-                  key={booking._id}
-                  className="p-4 rounded-xl bg-slate-900/50 border border-slate-800 flex flex-col gap-2.5 text-xs text-slate-400"
-                >
-                  <div className="flex justify-between items-start">
-                    <span className="font-bold text-white text-sm">{booking.customerName}</span>
-                    <span className="font-bold text-emerald-400 text-sm">${booking.totalPrice}</span>
+                <div key={booking._id} className="booking-item-card">
+                  <div className="booking-item-header">
+                    <span className="booking-customer-name">{booking.customerName}</span>
+                    <span className="booking-price">${booking.totalPrice}</span>
                   </div>
                   
-                  <div className="border-t border-slate-800/80 pt-2 flex flex-col gap-1">
+                  <div className="booking-meta-row">
                     <div>
-                      <span className="text-slate-500 font-medium">Room:</span>{' '}
-                      <span className="text-slate-200 font-semibold">{booking.room?.title || 'Deleted Room'}</span>
+                      Room: <span>{booking.room?.title || 'Deleted Room'}</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 font-medium">Dates:</span>{' '}
-                      <span className="text-slate-300 font-medium">
+                      Dates: <span>
                         {new Date(booking.checkIn).toLocaleDateString()} - {new Date(booking.checkOut).toLocaleDateString()}
                       </span>
                     </div>
@@ -271,52 +266,53 @@ export default function AdminDashboard() {
 
       {/* Add / Edit Listing Modal Overlay */}
       {(showAddModal || editingRoom) && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="glass-panel max-w-lg w-full p-6 flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-xl font-bold font-heading text-white">
+        <div className="modal-overlay">
+          <div className="modal-content glass-panel">
+            <h3 className="text-gradient-neon" style={{ fontSize: '1.25rem', fontWeight: '700' }}>
               {editingRoom ? 'Modify Hotel Room Listing' : 'Publish New Room Listing'}
             </h3>
             
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-slate-400 font-medium">Listing Title</label>
+            <form onSubmit={handleSubmit} className="modal-form">
+              <div className="form-group">
+                <label>Listing Title</label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g. Kyoto Traditional Machiya Loft"
-                  className="p-3 bg-slate-900 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-[hsl(var(--accent-primary))]"
+                  className="form-input-field"
                 />
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-slate-400 font-medium">Description</label>
+              <div className="form-group">
+                <label>Description</label>
                 <textarea
                   required
                   rows="3"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Describe the room, building, experience, and accessibility..."
-                  className="p-3 bg-slate-900 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-[hsl(var(--accent-primary))]"
+                  className="form-input-field"
+                  style={{ resize: 'none' }}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-slate-400 font-medium">Location</label>
+              <div className="form-row-grid">
+                <div className="form-group">
+                  <label>Location</label>
                   <input
                     type="text"
                     required
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     placeholder="e.g. Kyoto, Japan"
-                    className="p-3 bg-slate-900 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-[hsl(var(--accent-primary))]"
+                    className="form-input-field"
                   />
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-slate-400 font-medium">Nightly Rate (USD)</label>
+                <div className="form-group">
+                  <label>Nightly Rate (USD)</label>
                   <input
                     type="number"
                     required
@@ -324,14 +320,14 @@ export default function AdminDashboard() {
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     placeholder="e.g. 150"
-                    className="p-3 bg-slate-900 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-[hsl(var(--accent-primary))]"
+                    className="form-input-field"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-slate-400 font-medium">Total Inventory Count</label>
+              <div className="form-row-grid">
+                <div className="form-group">
+                  <label>Total Inventory Count</label>
                   <input
                     type="number"
                     required
@@ -339,13 +335,13 @@ export default function AdminDashboard() {
                     value={formData.totalRooms}
                     onChange={(e) => setFormData({ ...formData, totalRooms: e.target.value })}
                     placeholder="e.g. 5"
-                    className="p-3 bg-slate-900 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-[hsl(var(--accent-primary))]"
+                    className="form-input-field"
                   />
                 </div>
 
                 {editingRoom && (
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-slate-400 font-medium">Currently Available</label>
+                  <div className="form-group">
+                    <label>Currently Available</label>
                     <input
                       type="number"
                       required
@@ -354,35 +350,35 @@ export default function AdminDashboard() {
                       value={formData.availableRooms}
                       onChange={(e) => setFormData({ ...formData, availableRooms: e.target.value })}
                       placeholder="e.g. 3"
-                      className="p-3 bg-slate-900 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-[hsl(var(--accent-primary))]"
+                      className="form-input-field"
                     />
                   </div>
                 )}
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-slate-400 font-medium">Amenities (comma-separated list)</label>
+              <div className="form-group">
+                <label>Amenities (comma-separated list)</label>
                 <input
                   type="text"
                   value={formData.amenitiesString}
                   onChange={(e) => setFormData({ ...formData, amenitiesString: e.target.value })}
                   placeholder="wifi, pool, spa, ac, kitchen, breakfast, pets, gym, parking"
-                  className="p-3 bg-slate-900 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-[hsl(var(--accent-primary))]"
+                  className="form-input-field"
                 />
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-slate-400 font-medium">Image URL</label>
+              <div className="form-group">
+                <label>Image URL</label>
                 <input
                   type="url"
                   value={formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                   placeholder="https://example.com/image.jpg"
-                  className="p-3 bg-slate-900 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-[hsl(var(--accent-primary))]"
+                  className="form-input-field"
                 />
               </div>
 
-              <div className="flex gap-3 justify-end pt-4 border-t border-slate-800">
+              <div className="modal-action-row">
                 <button
                   type="button"
                   onClick={() => {
@@ -390,6 +386,7 @@ export default function AdminDashboard() {
                     setEditingRoom(null);
                   }}
                   className="btn btn-secondary text-xs"
+                  style={{ padding: '8px 16px' }}
                 >
                   Cancel
                 </button>
@@ -397,6 +394,7 @@ export default function AdminDashboard() {
                 <button
                   type="submit"
                   className="btn btn-primary text-xs"
+                  style={{ padding: '8px 16px' }}
                 >
                   {editingRoom ? 'Update Listing' : 'Create Listing'}
                 </button>

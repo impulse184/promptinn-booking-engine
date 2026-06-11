@@ -42,7 +42,7 @@ export default function SearchConsole() {
     return jsonStr.replace(
       /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
       (match) => {
-        let cls = 'text-orange-300'; // defaults (strings)
+        let cls = 'color: #c3e88d'; // defaults (strings)
         if (/^"/.test(match)) {
           if (/:$/.test(match)) {
             // Check if key is a mongo operator (starts with $)
@@ -71,26 +71,24 @@ export default function SearchConsole() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-6">
+    <div className="search-console-container">
       {/* Search Input Box */}
-      <form onSubmit={handleSubmit} className="w-full relative glass-panel p-6 flex flex-col gap-4">
-        <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50" />
-        
-        <h2 className="text-xl font-semibold flex items-center gap-2 font-heading text-gradient-neon">
-          <Sparkles className="w-5 h-5 text-[hsl(var(--accent-primary))]" />
+      <form onSubmit={handleSubmit} className="search-card glass-panel">
+        <h2 className="text-gradient-neon search-card-header" style={{ fontSize: '1.25rem' }}>
+          <Sparkles className="w-5 h-5" style={{ color: 'hsl(var(--accent-primary))' }} />
           Conversational Search Console
         </h2>
         
-        <div className="relative flex items-center">
-          <div className="absolute left-4 text-slate-400">
+        <div className="search-input-wrapper">
+          <div className="search-icon-container">
             {isLoading ? (
-              <div className="flex gap-1 items-center h-5">
+              <div style={{ display: 'flex', gap: '3px', alignItems: 'center', height: '20px' }}>
                 <span className="wave-bar"></span>
                 <span className="wave-bar"></span>
                 <span className="wave-bar"></span>
               </div>
             ) : (
-              <Search className="w-5 h-5 text-slate-400" />
+              <Search className="w-5 h-5" />
             )}
           </div>
           
@@ -99,14 +97,14 @@ export default function SearchConsole() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Type your natural language request (e.g. 'cozy cottage in London with wifi under 150')"
-            className="w-full pl-12 pr-12 py-4 rounded-xl border border-slate-700 bg-slate-900/60 text-white font-body text-[1rem] focus:outline-none focus:border-[hsl(var(--accent-primary))] focus:ring-1 focus:ring-[hsl(var(--accent-primary))] transition-all"
+            className="search-input-field"
           />
 
           {searchInput && (
             <button
               type="button"
               onClick={handleClear}
-              className="absolute right-4 p-1 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="search-clear-btn"
             >
               <X className="w-4 h-4" />
             </button>
@@ -114,16 +112,16 @@ export default function SearchConsole() {
         </div>
 
         {/* Suggestion Pills */}
-        <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider flex items-center gap-1">
-            <HelpCircle className="w-3 h-3" /> Quick Prompts:
+        <div className="suggestions-row">
+          <span className="suggestions-title">
+            <HelpCircle className="w-3.5 h-3.5" /> Quick Prompts:
           </span>
           {suggestions.map((sug, i) => (
             <button
               key={i}
               type="button"
               onClick={() => handleSuggestionClick(sug)}
-              className="badge badge-outline text-[0.8rem] normal-case py-1 px-3 bg-slate-900/40 border-slate-800 hover:border-[hsl(var(--accent-primary))] hover:text-white transition-colors cursor-pointer"
+              className="suggestion-pill"
             >
               "{sug}"
             </button>
@@ -133,26 +131,26 @@ export default function SearchConsole() {
 
       {/* Query Visualizer */}
       {lastParsedQuery && (
-        <div className="glass-panel overflow-hidden border border-slate-800 flex flex-col md:flex-row">
-          <div className="md:w-2/5 p-6 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col justify-center">
-            <span className="badge badge-accent mb-3 w-fit">Conversational Parser</span>
-            <h3 className="text-lg font-semibold mb-2">Intent Extraction</h3>
-            <p className="text-slate-400 text-sm leading-relaxed">
+        <div className="visualizer-card glass-panel">
+          <div className="visualizer-info">
+            <span className="badge badge-accent" style={{ marginBottom: '8px', width: 'fit-content' }}>Conversational Parser</span>
+            <h3>Intent Extraction</h3>
+            <p>
               {explanation}
             </p>
-            <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            <div className="visualizer-live-indicator">
+              <span className="visualizer-ping-dot" />
               <span>Real-time translation mapping active</span>
             </div>
           </div>
           
-          <div className="md:w-3/5 bg-slate-950/80 p-6 font-mono text-xs overflow-x-auto relative min-h-[150px]">
-            <div className="absolute top-4 right-4 flex items-center gap-1.5 text-slate-500 select-none">
+          <div className="visualizer-code">
+            <div className="visualizer-tag">
               <Terminal className="w-3.5 h-3.5" />
               <span>MONGODB QUERY FILTER</span>
             </div>
             
-            <pre className="mt-4 text-slate-300">
+            <pre>
               <code>
                 {`db.rooms.find(\n`}
                 <span 

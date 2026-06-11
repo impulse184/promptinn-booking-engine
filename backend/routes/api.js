@@ -1,6 +1,7 @@
 import express from 'express';
 import Room from '../models/Room.js';
 import Booking from '../models/Booking.js';
+import User from '../models/User.js';
 import { parsePromptToMongo } from '../services/geminiParser.js';
 
 const router = express.Router();
@@ -73,6 +74,73 @@ router.get('/seed', async (req, res) => {
       return res.status(201).json({ message: "Database seeded successfully with initial hotel listings!" });
     }
     res.json({ message: `Database already has ${count} listings. Seeding skipped.` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Auth: Register
+router.post('/auth/register', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required." });
+    }
+
+    const normalizedUsername = username.trim().toLowerCase();
+    
+    // Check if user already exists
+    const existingUser = await User.findOne({ username: normalizedUsername });
+    if (existingUser) {
+      return res.status(400).json({ error: "Username is already taken." });
+    }
+
+    const role = normalizedUsername === 'aakrisht' ? 'admin' : 'user';
+
+    const newUser = new User({
+      username: normalizedUsername,
+      password: password,
+      role
+    });
+
+    await newUser.save();
+    
+    res.status(201).json({
+      message: "Registration successful!",
+      user: {
+        _id: newUser._id,
+        username: newUser.username,
+        role: newUser.role
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Auth: Login
+router.post('/auth/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required." });
+    }
+
+    const normalizedUsername = username.trim().toLowerCase();
+    
+    const user = await User.findOne({ username: normalizedUsername });
+    if (!user || user.password !== password) {
+      return res.status(401).json({ error: "Invalid username or password." });
+    }
+
+    res.json({
+      message: "Login successful!",
+      user: {
+        _id: user._id,
+        username: user.username,
+        role: user.role
+      }
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -187,7 +255,7 @@ router.delete('/rooms/:id', async (req, res) => {
 // Bookings: Place booking
 router.post('/bookings', async (req, res) => {
   try {
-    const { roomId, customerName, checkIn, checkOut } = req.body;
+    const { roomId, customerName, checkIn, checkOut, userId } = req.body;
     
     if (!roomId || !customerName || !checkIn || !checkOut) {
       return res.status(400).json({ error: "Missing required booking details." });
@@ -211,6 +279,7 @@ router.post('/bookings', async (req, res) => {
     // Save booking
     const newBooking = new Booking({
       room: roomId,
+      user: userId,
       customerName,
       checkIn: start,
       checkOut: end,
@@ -232,10 +301,12 @@ router.post('/bookings', async (req, res) => {
   }
 });
 
-// Bookings: Get all bookings
+// Bookings: Get all bookings (optional filter by userId)
 router.get('/bookings', async (req, res) => {
   try {
-    const bookings = await Booking.find({}).populate('room').sort({ createdAt: -1 });
+    const { userId } = req.query;
+    const query = userId ? { user: userId } : {};
+    const bookings = await Booking.find(query).populate('room').sort({ createdAt: -1 });
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ error: error.message });

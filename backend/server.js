@@ -1,9 +1,16 @@
 import express from 'express';
 import cors from 'cors';
+import mongoose from 'mongoose';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import connectDB from './config/db.js';
 import apiRoutes from './routes/api.js';
 import Room from './models/Room.js';
+import User from './models/User.js';
 
 // Load environmental variables
 dotenv.config();
@@ -23,6 +30,18 @@ app.get('/health', (req, res) => {
   res.json({ status: 'healthy', database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' });
 });
 
+// Serve Static Frontend Files (production build)
+const distPath = path.join(__dirname, '../frontend/dist');
+app.use(express.static(distPath));
+
+// Fallback all other routes to index.html for Single Page App (SPA) routing
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
 // Start server after establishing DB connection
 const startServer = async () => {
   // Connect to live MongoDB
@@ -30,6 +49,21 @@ const startServer = async () => {
   
   if (conn) {
     try {
+      // Auto-seed admin user if not present
+      const adminUser = await User.findOne({ username: 'aakrisht' });
+      if (!adminUser) {
+        console.log('🌱 Seeding admin user...');
+        const newAdmin = new User({
+          username: 'aakrisht',
+          password: '12345678',
+          role: 'admin'
+        });
+        await newAdmin.save();
+        console.log('✅ Admin user "aakrisht" seeded successfully.');
+      } else {
+        console.log('📊 Admin user "aakrisht" already exists.');
+      }
+
       // Auto-seed rooms if database is empty on start
       const roomCount = await Room.countDocuments();
       if (roomCount === 0) {
