@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import os from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,6 +21,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Request metrics tracking for Actuator endpoint
+let totalRequests = 0;
+const startupTime = new Date().toISOString();
+
+// Middleware to count requests
+app.use((req, res, next) => {
+  totalRequests++;
+  next();
+});
+
 // Enable CORS and JSON body parsing with large payload limit for Base64 images
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -28,9 +39,75 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Register API Routes
 app.use('/api', apiRoutes);
 
-// Simple healthcheck
-app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' });
+// Rich Actuator-like Health and Metrics check
+app.get('/health', async (req, res) => {
+  const dbConnected = mongoose.connection.readyState === 1;
+  
+  let dbDetails = {
+    state: dbConnected ? 'connected' : 'disconnected',
+    roomsCount: 0,
+    bookingsCount: 0,
+    usersCount: 0
+  };
+
+  if (dbConnected) {
+    try {
+      const [roomsCount, bookingsCount, usersCount] = await Promise.all([
+        Room.countDocuments(),
+        Booking.countDocuments(),
+        User.countDocuments()
+      ]);
+      dbDetails.roomsCount = roomsCount;
+      dbDetails.bookingsCount = bookingsCount;
+      dbDetails.usersCount = usersCount;
+    } catch (err) {
+      console.error('Failed to fetch DB stats for health check:', err.message);
+    }
+  }
+
+  const freeMem = os.freemem();
+  const totalMem = os.totalmem();
+  const memoryUsedPercent = (((totalMem - freeMem) / totalMem) * 100).toFixed(2) + '%';
+  const memUsage = process.memoryUsage();
+
+  const statusInfo = {
+    status: dbConnected ? 'UP' : 'DEGRADED',
+    components: {
+      db: {
+        status: dbConnected ? 'UP' : 'DOWN',
+        details: {
+          ...dbDetails,
+          host: mongoose.connection.host || 'unknown'
+        }
+      },
+      system: {
+        status: 'UP',
+        details: {
+          nodeVersion: process.version,
+          platform: process.platform,
+          arch: process.arch,
+          uptimeSeconds: Math.floor(process.uptime()),
+          systemUptimeSeconds: Math.floor(os.uptime()),
+          cpuCores: os.cpus().length,
+          memory: {
+            totalBytes: totalMem,
+            freeBytes: freeMem,
+            usedPercent: memoryUsedPercent,
+            processHeapUsedBytes: memUsage.heapUsed,
+            processHeapTotalBytes: memUsage.heapTotal,
+            processRssBytes: memUsage.rss
+          },
+          loadAverage: os.loadavg()
+        }
+      },
+      metrics: {
+        totalRequests,
+        serverStartupTime: startupTime
+      }
+    }
+  };
+
+  res.json(statusInfo);
 });
 
 // Serve Static Frontend Files (production build) with custom headers to prevent browser caching of index.html
