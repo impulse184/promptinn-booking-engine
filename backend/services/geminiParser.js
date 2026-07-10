@@ -36,16 +36,48 @@ const parseLocalPrompt = (prompt) => {
   // 2. Parse Amenities
   const foundAmenities = [];
   standardAmenities.forEach(amenity => {
-    // Check if the amenity is mentioned
-    // Special handling for wifi (wi-fi), aircon (ac, air conditioning)
-    if (amenity === 'wifi' && (normalized.includes('wifi') || normalized.includes('wi-fi') || normalized.includes('internet'))) {
-      foundAmenities.push('wifi');
-    } else if (amenity === 'ac' && (normalized.includes('ac') || normalized.includes('air conditioning') || normalized.includes('a/c'))) {
-      foundAmenities.push('ac');
-    } else if (amenity === 'pets' && (normalized.includes('pet') || normalized.includes('pets') || normalized.includes('dog') || normalized.includes('cat'))) {
-      foundAmenities.push('pets');
-    } else if (normalized.includes(amenity)) {
-      foundAmenities.push(amenity);
+    // Check if the amenity is mentioned using word boundaries to avoid false positives (e.g. 'ac' in 'palace')
+    if (amenity === 'wifi') {
+      if (/\b(wifi|wi-fi|internet)\b/i.test(normalized)) {
+        foundAmenities.push('wifi');
+      }
+    } else if (amenity === 'ac') {
+      if (/\b(ac|air conditioning|a\/c)\b/i.test(normalized)) {
+        foundAmenities.push('ac');
+      }
+    } else if (amenity === 'pets') {
+      if (/\b(pet|pets|dog|dogs|cat|cats)\b/i.test(normalized)) {
+        foundAmenities.push('pets');
+      }
+    } else if (amenity === 'pool') {
+      if (/\b(pool|pools|swimming)\b/i.test(normalized)) {
+        foundAmenities.push('pool');
+      }
+    } else if (amenity === 'spa') {
+      if (/\b(spa|spas)\b/i.test(normalized)) {
+        foundAmenities.push('spa');
+      }
+    } else if (amenity === 'gym') {
+      if (/\b(gym|gyms|fitness|workout)\b/i.test(normalized)) {
+        foundAmenities.push('gym');
+      }
+    } else if (amenity === 'parking') {
+      if (/\b(parking|valet|garage)\b/i.test(normalized)) {
+        foundAmenities.push('parking');
+      }
+    } else if (amenity === 'kitchen') {
+      if (/\b(kitchen|kitchenette|cook)\b/i.test(normalized)) {
+        foundAmenities.push('kitchen');
+      }
+    } else if (amenity === 'breakfast') {
+      if (/\b(breakfast|morning meal)\b/i.test(normalized)) {
+        foundAmenities.push('breakfast');
+      }
+    } else {
+      const regex = new RegExp('\\b' + amenity + '\\b', 'i');
+      if (regex.test(normalized)) {
+        foundAmenities.push(amenity);
+      }
     }
   });
 
