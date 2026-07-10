@@ -664,11 +664,11 @@ app.get('/health', async (req, res) => {
                 </div>
                 <div class="stat-detail-item">
                     <span class="stat-label-text">Total Requests</span>
-                    <span class="stat-val-text" style="color: var(--accent-cyan); font-size: 1.2rem; font-weight: 800;">${statusInfo.metrics.totalRequests}</span>
+                    <span class="stat-val-text" style="color: var(--accent-cyan); font-size: 1.2rem; font-weight: 800;">${statusInfo.components.metrics.totalRequests}</span>
                 </div>
                 <div class="stat-detail-item">
                     <span class="stat-label-text">Startup Time</span>
-                    <span class="stat-val-text" style="font-size: 0.8rem;">${new Date(statusInfo.metrics.serverStartupTime).toLocaleString()}</span>
+                    <span class="stat-val-text" style="font-size: 0.8rem;">${new Date(statusInfo.components.metrics.serverStartupTime).toLocaleString()}</span>
                 </div>
                 <div class="stat-detail-item">
                     <span class="stat-label-text">Heap Used</span>
