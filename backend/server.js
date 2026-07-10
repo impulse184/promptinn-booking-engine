@@ -112,27 +112,29 @@ app.get('/health', async (req, res) => {
     return res.json(statusInfo);
   }
 
-  // Actuator HTML Console Template
+  // Actuator HTML Console Template (Obsidian Redesign)
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PromptInn Actuator Health Console</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #0b0f19;
-            --bg-card: #131b2e;
-            --border-color: rgba(255, 255, 255, 0.06);
-            --accent-success: #10b981;
-            --accent-success-glow: rgba(16, 185, 129, 0.15);
-            --accent-error: #ef4444;
+            --bg-main: #030712;
+            --bg-glow: radial-gradient(circle at 50% -20%, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            --card-bg: rgba(15, 23, 42, 0.45);
+            --card-border: rgba(255, 255, 255, 0.04);
+            --card-border-hover: rgba(99, 102, 241, 0.2);
+            --accent-mint: #10b981;
+            --accent-mint-glow: rgba(16, 185, 129, 0.25);
+            --accent-rose: #f43f5e;
             --accent-primary: #6366f1;
             --accent-cyan: #06b6d4;
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
-            --text-muted: #64748b;
+            --text-muted: #475569;
         }
 
         * {
@@ -142,261 +144,381 @@ app.get('/health', async (req, res) => {
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-main);
+            background-image: var(--bg-glow);
             color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            padding: 2rem;
+            padding: 2.5rem;
+            overflow-x: hidden;
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 3rem;
         }
 
-        .logo-section {
+        .logo-group {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
         }
 
-        .logo-icon {
+        .logo-icon-wrapper {
             background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.35);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+            position: relative;
         }
 
-        .logo-icon svg {
-            width: 22px;
-            height: 22px;
+        .logo-icon-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+            z-index: -1;
+        }
+
+        .logo-icon-wrapper svg {
+            width: 24px;
+            height: 24px;
             color: white;
         }
 
-        .logo-text h1 {
-            font-size: 1.35rem;
+        .logo-title h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
             font-weight: 800;
-            background: linear-gradient(90deg, #f8fafc 30%, #94a3b8 100%);
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .logo-text p {
+        .logo-title p {
             font-size: 0.75rem;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             font-weight: 600;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
+            margin-top: 2px;
         }
 
-        .status-badge {
+        .sys-badge {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.85rem;
+            gap: 0.6rem;
+            padding: 0.6rem 1.25rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
             font-weight: 700;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            background-color: var(--accent-success-glow);
-            color: var(--accent-success);
-            box-shadow: 0 0 15px var(--accent-success-glow);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            background: rgba(16, 185, 129, 0.06);
+            backdrop-filter: blur(10px);
+            color: var(--accent-mint);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
         }
 
-        .status-badge.degraded {
-            border-color: rgba(239, 68, 68, 0.25);
-            background-color: rgba(239, 68, 68, 0.1);
-            color: var(--accent-error);
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+        .sys-badge.degraded {
+            border-color: rgba(244, 63, 94, 0.2);
+            background: rgba(244, 63, 94, 0.06);
+            color: var(--accent-rose);
+            box-shadow: 0 4px 20px rgba(244, 63, 94, 0.1);
         }
 
-        .status-dot {
+        .sys-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: var(--accent-success);
-            box-shadow: 0 0 8px var(--accent-success);
-            animation: pulse 2s infinite;
+            background-color: var(--accent-mint);
+            box-shadow: 0 0 10px var(--accent-mint), 0 0 20px var(--accent-mint);
+            animation: pulse-ring 2s infinite ease-in-out;
         }
 
-        .status-badge.degraded .status-dot {
-            background-color: var(--accent-error);
-            box-shadow: 0 0 8px var(--accent-error);
+        .sys-badge.degraded .sys-dot {
+            background-color: var(--accent-rose);
+            box-shadow: 0 0 10px var(--accent-rose), 0 0 20px var(--accent-rose);
         }
 
-        @keyframes pulse {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            50% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.7; }
         }
 
-        .grid-container {
+        .main-dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
             flex-grow: 1;
         }
 
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.5rem;
+        .dashboard-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 24px;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s, border-color 0.2s;
-        }
-
-        .card:hover {
-            border-color: rgba(99, 102, 241, 0.2);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.75rem;
-        }
-
-        .card-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-primary);
-        }
-
-        .card-icon {
-            color: var(--accent-primary);
-        }
-
-        .card-badge {
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .card-badge.up {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: var(--accent-success);
-        }
-
-        .card-badge.down {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: var(--accent-error);
-        }
-
-        .metric-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.85rem;
-        }
-
-        .metric-label {
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .metric-value {
-            color: var(--text-primary);
-            font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .progress-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            margin-top: 0.5rem;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            gap: 1.5rem;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
             overflow: hidden;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #6366f1, #06b6d4);
-            border-radius: 10px;
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
         }
 
-        .action-row {
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--card-border-hover);
+            box-shadow: 0 30px 60px -15px rgba(99, 102, 241, 0.12), 0 0 40px -10px rgba(99, 102, 241, 0.05);
+        }
+
+        .card-heading-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding-bottom: 1rem;
+        }
+
+        .card-heading-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .card-icon-container {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+        }
+
+        .dashboard-card:hover .card-icon-container {
+            color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        .status-pill {
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .status-pill.up {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--accent-mint);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+
+        .status-pill.down {
+            background-color: rgba(244, 63, 94, 0.1);
+            color: var(--accent-rose);
+            border: 1px solid rgba(244, 63, 94, 0.15);
+        }
+
+        .stat-details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        .stat-detail-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: auto;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.8rem;
-            color: var(--text-muted);
+            font-size: 0.9rem;
         }
 
-        .btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
+        .stat-label-text {
+            color: var(--text-secondary);
+            font-weight: 450;
+        }
+
+        .stat-val-text {
             color: var(--text-primary);
-            padding: 8px 16px;
-            border-radius: 8px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .stat-val-text.mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .progress-metric-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar-track {
+            width: 100%;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1 0%, #06b6d4 100%);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+
+        .progress-meta-text {
+            display: flex;
+            justify-content: space-between;
             font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .actions-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .toggle-switch-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            user-select: none;
+        }
+
+        .toggle-switch-container input {
+            display: none;
+        }
+
+        .custom-toggle {
+            width: 38px;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 100px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .custom-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            background-color: var(--text-secondary);
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toggle-switch-container input:checked + .custom-toggle {
+            background-color: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .toggle-switch-container input:checked + .custom-toggle::after {
+            left: 20px;
+            background-color: #818cf8;
+            box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .actuator-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            padding: 0.65rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
             font-weight: 600;
+            font-family: 'Inter', sans-serif;
             cursor: pointer;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .btn:hover {
-            background-color: rgba(255, 255, 255, 0.07);
+        .actuator-btn:hover {
+            background-color: rgba(255, 255, 255, 0.06);
             border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
         }
 
-        .btn-primary-actuator {
+        .actuator-btn-primary {
             background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
             border: none;
             color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
         }
 
-        .btn-primary-actuator:hover {
+        .actuator-btn-primary:hover {
             background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
         }
 
-        .footer-text {
+        footer {
             text-align: center;
-            margin-top: 2rem;
+            margin-top: 3rem;
             font-size: 0.75rem;
             color: var(--text-muted);
+            letter-spacing: 0.02em;
         }
     </style>
     <script>
-        // Simple auto refresh controller
         let refreshInterval = null;
         function toggleRefresh(checkbox) {
             if (checkbox.checked) {
@@ -410,7 +532,7 @@ app.get('/health', async (req, res) => {
         
         window.addEventListener('load', () => {
             const active = localStorage.getItem('health_autorefresh') === 'true';
-            const cb = document.getElementById('auto-refresh');
+            const cb = document.getElementById('auto-refresh-input');
             if (cb) {
                 cb.checked = active;
                 if (active) toggleRefresh(cb);
@@ -420,157 +542,170 @@ app.get('/health', async (req, res) => {
 </head>
 <body>
     <header>
-        <div class="logo-section">
-            <div class="logo-icon">
+        <div class="logo-group">
+            <div class="logo-icon-wrapper">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
                 </svg>
             </div>
-            <div class="logo-text">
+            <div class="logo-title">
                 <h1>PromptInn</h1>
                 <p>Actuator Health Monitor</p>
             </div>
         </div>
-        <div class="status-badge \${statusInfo.status === 'UP' ? '' : 'degraded'}">
-            <span class="status-dot"></span>
-            <span>SYSTEM: \${statusInfo.status}</span>
+        <div class="sys-badge ${statusInfo.status === 'UP' ? '' : 'degraded'}">
+            <span class="sys-dot"></span>
+            <span>SYSTEM: ${statusInfo.status}</span>
         </div>
     </header>
 
-    <div class="grid-container">
-        <!-- DB Card -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">
-                    <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-                    </svg>
-                    Database Health
+    <div class="main-dashboard-grid">
+        <!-- DB Health Card -->
+        <div class="dashboard-card">
+            <div class="card-heading-row">
+                <div class="card-heading-title">
+                    <div class="card-icon-container">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                        </svg>
+                    </div>
+                    Database Node
                 </div>
-                <span class="card-badge \${statusInfo.components.db.status === 'UP' ? 'up' : 'down'}">\${statusInfo.components.db.status}</span>
+                <span class="status-pill ${statusInfo.components.db.status === 'UP' ? 'up' : 'down'}">${statusInfo.components.db.status}</span>
             </div>
-            <div class="metric-row">
-                <span class="metric-label">Status State</span>
-                <span class="metric-value" style="color: \${statusInfo.components.db.status === 'UP' ? 'var(--accent-success)' : 'var(--accent-error)'}">\${statusInfo.components.db.details.state}</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Host Node</span>
-                <span class="metric-value" style="font-size: 0.75rem; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="\${statusInfo.components.db.details.host}">\${statusInfo.components.db.details.host}</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Hotel Listings</span>
-                <span class="metric-value">\${statusInfo.components.db.details.roomsCount}</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Active Bookings</span>
-                <span class="metric-value">\${statusInfo.components.db.details.bookingsCount}</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Registered Users</span>
-                <span class="metric-value">\${statusInfo.components.db.details.usersCount}</span>
-            </div>
-        </div>
-
-        <!-- System Stats -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">
-                    <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                    </svg>
-                    System Information
+            <div class="stat-details-list">
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">Connection State</span>
+                    <span class="stat-val-text" style="color: ${statusInfo.components.db.status === 'UP' ? 'var(--accent-mint)' : 'var(--accent-rose)'}">${statusInfo.components.db.details.state}</span>
                 </div>
-                <span class="card-badge up">UP</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Node Runtime</span>
-                <span class="metric-value">\${statusInfo.components.system.details.nodeVersion} (\${statusInfo.components.system.details.platform}/\${statusInfo.components.system.details.arch})</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">CPU Core Allocation</span>
-                <span class="metric-value">\${statusInfo.components.system.details.cpuCores} Cores</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">System Load Average</span>
-                <span class="metric-value">\${statusInfo.components.system.details.loadAverage.map(v => v.toFixed(2)).join(', ')}</span>
-            </div>
-            <div class="progress-container">
-                <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
-                    <span style="color: var(--text-secondary);">RAM Utilization</span>
-                    <span style="font-weight: bold;">\${statusInfo.components.system.details.memory.usedPercent}</span>
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">Cluster Host</span>
+                    <span class="stat-val-text mono" style="max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${statusInfo.components.db.details.host}">${statusInfo.components.db.details.host}</span>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: \${statusInfo.components.system.details.memory.usedPercent}"></div>
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">Hotel Inventory</span>
+                    <span class="stat-val-text">${statusInfo.components.db.details.roomsCount} rooms</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted);">
-                    <span>Free: \${(statusInfo.components.system.details.memory.freeBytes / (1024*1024*1024)).toFixed(2)} GB</span>
-                    <span>Total: \${(statusInfo.components.system.details.memory.totalBytes / (1024*1024*1024)).toFixed(2)} GB</span>
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">Active Bookings</span>
+                    <span class="stat-val-text">${statusInfo.components.db.details.bookingsCount} reservations</span>
+                </div>
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">Registered Accounts</span>
+                    <span class="stat-val-text">${statusInfo.components.db.details.usersCount} users</span>
                 </div>
             </div>
         </div>
 
-        <!-- Metrics -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">
-                    <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
-                    </svg>
+        <!-- System Stats Card -->
+        <div class="dashboard-card">
+            <div class="card-heading-row">
+                <div class="card-heading-title">
+                    <div class="card-icon-container">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                        </svg>
+                    </div>
+                    Host Server
+                </div>
+                <span class="status-pill up">UP</span>
+            </div>
+            <div class="stat-details-list">
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">Runtime Engine</span>
+                    <span class="stat-val-text mono">${statusInfo.components.system.details.nodeVersion} (${statusInfo.components.system.details.platform}/${statusInfo.components.system.details.arch})</span>
+                </div>
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">CPU Cores</span>
+                    <span class="stat-val-text">${statusInfo.components.system.details.cpuCores} Cores</span>
+                </div>
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">Load Average</span>
+                    <span class="stat-val-text mono">${statusInfo.components.system.details.loadAverage.map(v => v.toFixed(2)).join(', ')}</span>
+                </div>
+                <div class="progress-metric-box">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                        <span class="stat-label-text">RAM Utilization</span>
+                        <span class="stat-val-text">${statusInfo.components.system.details.memory.usedPercent}</span>
+                    </div>
+                    <div class="progress-bar-track">
+                        <div class="progress-bar-fill" style="width: ${statusInfo.components.system.details.memory.usedPercent}"></div>
+                    </div>
+                    <div class="progress-meta-text">
+                        <span>Free: ${(statusInfo.components.system.details.memory.freeBytes / (1024*1024*1024)).toFixed(2)} GB</span>
+                        <span>Total: ${(statusInfo.components.system.details.memory.totalBytes / (1024*1024*1024)).toFixed(2)} GB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Telemetry & Metrics Card -->
+        <div class="dashboard-card">
+            <div class="card-heading-row">
+                <div class="card-heading-title">
+                    <div class="card-icon-container">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                        </svg>
+                    </div>
                     API Telemetry
                 </div>
-                <span class="card-badge up">UP</span>
+                <span class="status-pill up">UP</span>
             </div>
-            <div class="metric-row">
-                <span class="metric-label">Uptime (Process)</span>
-                <span class="metric-value" style="color: var(--accent-cyan)">
-                    \${Math.floor(statusInfo.components.system.details.uptimeSeconds / 3600)}h 
-                    \${Math.floor((statusInfo.components.system.details.uptimeSeconds % 3600) / 60)}m 
-                    \${statusInfo.components.system.details.uptimeSeconds % 60}s
-                </span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Processed Requests</span>
-                <span class="metric-value" style="color: var(--accent-cyan); font-size: 1.15rem; font-weight: 800;">\${statusInfo.metrics.totalRequests}</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Startup Timestamp</span>
-                <span class="metric-value" style="font-size: 0.75rem;">\${new Date(statusInfo.metrics.serverStartupTime).toLocaleString()}</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Heap Memory Used</span>
-                <span class="metric-value">\${(statusInfo.components.system.details.memory.processHeapUsedBytes / (1024*1024)).toFixed(2)} MB</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Heap Memory Limit</span>
-                <span class="metric-value">\${(statusInfo.components.system.details.memory.processHeapTotalBytes / (1024*1024)).toFixed(2)} MB</span>
+            <div class="stat-details-list">
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">Process Uptime</span>
+                    <span class="stat-val-text" style="color: var(--accent-cyan)">
+                        ${Math.floor(statusInfo.components.system.details.uptimeSeconds / 3600)}h 
+                        ${Math.floor((statusInfo.components.system.details.uptimeSeconds % 3600) / 60)}m 
+                        ${statusInfo.components.system.details.uptimeSeconds % 60}s
+                    </span>
+                </div>
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">Total Requests</span>
+                    <span class="stat-val-text" style="color: var(--accent-cyan); font-size: 1.2rem; font-weight: 800;">${statusInfo.metrics.totalRequests}</span>
+                </div>
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">Startup Time</span>
+                    <span class="stat-val-text" style="font-size: 0.8rem;">${new Date(statusInfo.metrics.serverStartupTime).toLocaleString()}</span>
+                </div>
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">Heap Used</span>
+                    <span class="stat-val-text mono">${(statusInfo.components.system.details.memory.processHeapUsedBytes / (1024*1024)).toFixed(2)} MB</span>
+                </div>
+                <div class="stat-detail-item">
+                    <span class="stat-label-text">Heap Limit</span>
+                    <span class="stat-val-text mono">${(statusInfo.components.system.details.memory.processHeapTotalBytes / (1024*1024)).toFixed(2)} MB</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="action-row">
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <input type="checkbox" id="auto-refresh" onchange="toggleRefresh(this)" style="cursor: pointer;">
-            <label for="auto-refresh" style="cursor: pointer; user-select: none;">Auto-refresh every 5s</label>
-        </div>
-        <div>
-            <a href="/health?format=json" class="btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <div class="actions-section">
+        <label class="toggle-switch-container">
+            <input type="checkbox" id="auto-refresh-input" onchange="toggleRefresh(this)">
+            <span class="custom-toggle"></span>
+            <span>Auto-refresh Console (5s)</span>
+        </label>
+        <div class="btn-group">
+            <a href="/health?format=json" class="actuator-btn">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
-                View Raw JSON
+                Raw JSON Payload
             </a>
-            <button onclick="window.location.reload()" class="btn btn-primary-actuator">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <button onclick="window.location.reload()" class="actuator-btn actuator-btn-primary">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89H18v3" />
                 </svg>
-                Refresh Status
+                Sync Metrics
             </button>
         </div>
     </div>
 
-    <footer class="footer-text">
-        PromptInn AI Hotel Booking Engine · System Actuator Console · \${new Date().getFullYear()}
+    <footer>
+        PromptInn AI Hotel Booking Engine · Powered by Node, Express, MongoDB and Gemini API · ${new Date().getFullYear()}
     </footer>
 </body>
 </html>`;
